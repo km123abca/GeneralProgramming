@@ -1,0 +1,5 @@
+chrome_button.png none
+addressbar_text_keypress.png http://localhost/sqlsamplesite/
+username_text.png arbin
+password_text.png chennai
+submit_button none

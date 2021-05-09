@@ -1,0 +1,1 @@
+set /p path=<pat2.txt
