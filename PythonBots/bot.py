@@ -7,8 +7,9 @@ import win32api,win32con
 
 #363 425 480 536     300
 msgGiven=False
-pixelPosX=[363,425,480,536]
-y=300
+# pixelPosX=[363,425,480,536]
+pixelPosX=[542,627,709,799]
+y=360
 def click(x,y):
 	win32api.SetCursorPos((x,y))
 	win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,0,0)
