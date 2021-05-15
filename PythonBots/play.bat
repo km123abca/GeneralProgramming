@@ -1,0 +1,2 @@
+python Stickman.py
+pause

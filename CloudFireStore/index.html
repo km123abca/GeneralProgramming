@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="styles.css">
+        <script src="https://www.gstatic.com/firebasejs/8.6.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.0/firebase-firestore.js"></script>
+    </head>
+    <body>
+
+        <h1>Cloud Cafe</h1>
+        <div id="floatingBox">
+                <form id="update-cafe-form">
+                <input type="text" name="nameupdated" placeholder="Cafe name" style="width:30%;"/> 
+                <input type="text" name="cityupdated" placeholder="Cafe city" style="width:30%;"/>                  
+                <button type="submit">UPDATE</button>
+                <button id="dismissButton">DISMISS</button>
+                </form>
+        </div>
+
+        <div class="content">
+
+            <form id="add-cafe-form">
+                <input type="text" name="name" placeholder="Cafe name"/> 
+                <input type="text" name="city" placeholder="Cafe city"/>  
+                <button>Add Cafe</button>
+            </form>
+
+            <ul id="cafe-list"></ul>
+
+        </div>
+           
+
+    <script> 
+        var firebaseConfig = {
+        apiKey: "AIzaSyCWiOSReDHuKseqQ1kd62hK8JftKles3yQ",
+        authDomain: "multipletodo-d4767.firebaseapp.com",
+        projectId: "multipletodo-d4767",
+        storageBucket: "multipletodo-d4767.appspot.com",
+        messagingSenderId: "108917828609",
+        appId: "1:108917828609:web:35f4f40696b77e06eea400"
+        }; 
+        firebase.initializeApp(firebaseConfig);
+        const db=firebase.firestore();
+        db.settings({timestampsInSnapshots:true});
+    </script>
+        <script src="app.js"></script>
+    </body>
+</html>
