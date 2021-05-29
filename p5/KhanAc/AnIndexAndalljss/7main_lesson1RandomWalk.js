@@ -50,3 +50,7 @@ draw = function()
     w.walk();
     w.display();
 	};
+
+/*
+
+*/
