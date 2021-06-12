@@ -1,0 +1,7 @@
+Regular Expressions
+
+*. re.match tries to match the entire sentence and returns false if any unmatched pattern is found
+                                                           true as soon as a match is obtained
+    print(re.match('[a-z]+','hello people')) returns hello , but
+    print(re.match('[a-z]+','3hello people'))  returns false
+    This is unlike re.search
