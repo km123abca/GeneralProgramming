@@ -1,0 +1,33 @@
+*****************************************************
+
+
+# import selenium
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
+
+WEBDRIVERPATH='D:\\ChromeDriverLocation\\chromedriver.exe'
+driver=webdriver.Chrome(WEBDRIVERPATH)
+driver.get('https://techwithtim.net')
+print(driver.title) #prints title of the page
+search= driver.find_element_by_name("s")
+search.send_keys("test") #type in test
+search.send_keys(Keys.RETURN) #press enter
+
+
+time.sleep(5)
+#driver.close() #closes the tab
+driver.quit() #closes the browser
+
+*****************************************************
+
+
+*****************************************************
+driver.page_source gives the entire page content
+*****************************************************
+
+
+*****************************************************
+main=driver.find_element_by_id("main")
+print(main.text)
+*****************************************************
