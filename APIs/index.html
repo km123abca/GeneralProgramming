@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Playing with apis</title>
+	<script>
+		//website: https://apisetu.gov.in/public/api/cowin/cowin-public-v2
+		//Examples
+		//	https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=296&date=24-06-2021
+
+		//Final website
+		//website: https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=296&date=24-06-2021
+
+       
+		//Examples
+		//###################urls start #######################
+		// let rooturl="https://cdndemo-api.co-vin.in/api";//sandbox server
+		let rooturl="https://cdn-api.co-vin.in/api";//production server
+		let states="/v2/admin/location/states";
+		let districts="/v2/admin/location/districts/";
+		// let sessionsByDistrict="/v2/appointment/sessions/findByDistrict";
+		let sessionsByDistrict="/v2/appointment/sessions/public/calendarByDistrict";
+
+
+
+
+		//##################urls ends ########################
+
+		//#################Variables starts#########################
+		let selectedState="none";
+		let selectedDistrict="none";
+		let selectedStateId="none";
+		let selectedDistrictId="none";
+		let selectedDate=null;
+		let districtsSet=false;
+		let dateToday=(new Date).toLocaleDateString().replace(/\//g,'-');
+
+		//################Variables ends ############################
+		
+		let addDays=(numDays)=>
+			{
+				let a=new Date();
+				let b=new Date();
+				b.setDate(a.getDate()+numDays);
+				return b.toLocaleDateString().replace(/\//g,'-');
+			}
+
+		let stateChanged=(elem)=>
+			{
+				selectedStateId=elem.value;
+				selectedState=document.querySelector('#selectedstate'+elem.value).innerHTML;
+				localStorage.setItem('selectedStateId',selectedStateId);
+				getDistricts(selectedStateId);
+
+			}
+		let districtChanged=(elem)=>
+			{
+				selectedDistrictId=elem.value;
+				selectedDistrict=document.querySelector('#selecteddistrict'+elem.value).innerHTML;
+				localStorage.setItem('selectedDistrictId',selectedDistrictId);				
+				getVaccinationSessions(selectedDistrictId);				
+			}
+
+		let PullData=()=>
+			{
+				let stateIdLocal=document.querySelector('#states-select').value;
+				let districtIdLocal=document.querySelector('#districts-select').value;
+				if(districtIdLocal=="none" || stateIdLocal=="none")
+				{
+					alert("Please select a state and district");
+					return;
+				}
+				getVaccinationSessions(districtIdLocal);
+			}
+
+		let localData={'states':null,'districts':null,'data':null,'selectedStateId':null,'selectedDistrictId':null};
+		let localDataExists=(keyname)=>
+			{
+				if(!localStorage.getItem(keyname))
+					return false;
+				else
+					{
+						localData[keyname]=JSON.parse(localStorage.getItem(keyname));
+						return true;
+					}
+			}
+
+
+		let getVaccinationSessions=(district_id)=>
+			{
+				document.getElementsByClassName('loading')[0].style.display="block";
+				fetch(rooturl+sessionsByDistrict+`?district_id=${district_id}&date=${dateToday}`)					 
+					.then(resp=>resp.json())
+					.then(
+						data=>
+								{
+								//document.querySelector('#raw-data').innerHTML=JSON.stringify(data);
+								document.getElementsByClassName('loading')[0].style.display="none";
+								LayoutinTable(data);
+								localStorage.setItem('data',JSON.stringify(data));
+								}
+						)
+					.catch(
+							err => {console.log(err);}
+						);
+			}
+
+		let LayoutinTable=(data)=>
+			{
+				document.querySelector('#tbody').innerHTML='';
+				for(let x of data.centers)
+					{
+
+					for(let y of x.sessions)
+						{
+						if(parseInt(y.available_capacity)==0) continue;
+						document.querySelector('#tbody').innerHTML+=
+						`<tr>
+						    <td>${y.date}</td>
+						    <td>${x.center_id}</td>
+						    <td>${x.name}</td>
+						    <td>${y.available_capacity_dose1}</td>
+						    <td>${y.available_capacity_dose2}</td>
+						    <td>${y.min_age_limit}</td>
+						    <td>${y.vaccine}</td>
+						    <td>${x.fee_type}</td>
+						 </tr>`;
+						}						
+							
+						
+					}
+			}
+
+
+		let prepareDropdown=(datum,strr)=>
+			{
+				if(strr=='states')
+					{		
+					document.querySelector('#states-select').innerHTML='';			
+					for (let elem of datum.states)
+						{
+							document.querySelector('#states-select').innerHTML+=
+							`<option value="${elem.state_id}" id='selectedstate${elem.state_id}'>${elem.state_name}</option>`;
+						}
+					}
+				else if(strr=='districts')
+					{
+					document.querySelector('#districts-select').innerHTML='';
+					for (let elem of datum.districts)
+						{
+							document.querySelector('#districts-select').innerHTML+=
+							`<option value="${elem.district_id}" id='selecteddistrict${elem.district_id}'>${elem.district_name}</option>`;
+						}
+					}
+			}
+		let getStates=()=>
+			{
+				fetch(rooturl+states)
+				.then(resp=>
+							{
+							
+							return resp.json();	
+							}					
+					 )
+				.then(
+					  data=>
+					  		{
+					  			 // document.querySelector('#raw-data').innerHTML=JSON.stringify(data);
+					  			localStorage.setItem('states',JSON.stringify(data));
+					  			prepareDropdown(data,'states');
+					  		}
+
+					 );
+			}
+		let getDistricts=(stateId_rec)=>
+			{
+				
+				fetch(rooturl+districts+stateId_rec)
+				.then(resp=>
+							{
+							
+							return resp.json();	
+							}					
+					 )
+				.then(
+					  data=>
+					  		{
+					  			 // document.querySelector('#raw-data').innerHTML=JSON.stringify(data);
+					  			localStorage.setItem('districts',JSON.stringify(data));
+					  			prepareDropdown(data,'districts');
+					  			districtsSet=true;
+					  		}
+
+					 );
+			}
+		let dateChanged=()=>
+			{
+				let dt=document.querySelector('#dt').value;
+				dtarr=dt.split('-');
+				dt=dtarr[2]+"-"+dtarr[1]+"-"+dtarr[0];
+				selectedDate=dt;
+
+				if(districtsSet)
+				{ 
+					let x=document.querySelector('#districts-select').value;
+					getVaccinationSessions(x);
+				}
+
+			}
+	</script>
+
+	<style>
+		body
+			{
+				background-color: #D5DDF3;
+				/*background-color: "#000";*/
+			}
+		.button-panel
+			{
+
+				display:flex;
+				justify-content: space-between;
+				max-width:80%;
+				margin:auto;
+				margin-top:30px;
+				flex-wrap:wrap;
+				/*border:2px solid red;*/
+			}
+/*@media(max-width:1000px)
+	{
+		.button-panel
+		{
+		flex-direction: column;
+		align-items:flex-start;
+		}
+	}*/
+		.button-container
+			{
+              /*border:2px solid black;*/
+              margin:auto;
+			}
+		.generic-button
+			{
+				margin:auto;
+				cursor:pointer;
+				background-color:#3333ff;
+				color:white;
+				border-radius: 5px;
+				
+				width:100px;
+				height: 50px;
+				font-weight: bold;
+				box-shadow: -1px 0px 1px rgba(0,0,0,0.1);
+				border:0;
+				/*border:0;*/
+			}
+		.generic-button:hover
+			{
+				background-color:#ccccff;
+				/*width:200px;*/
+			}
+		#raw-data
+			{
+				
+				max-width:80%;
+				margin:auto;
+				margin-top:80px;
+			}
+		#states-select
+			{
+				width:200px;
+			}
+		#tablereg
+			{
+				width:80%;
+				margin:auto;
+			}
+
+
+/*table styles*/
+			  table#stab 
+              {
+                width: 100%; 
+                background-color: #f1f1c1;
+              }
+              th
+              {
+              text-align: left;
+              }
+              table#stab tr td
+              	{
+              		text-align: center;
+              	}
+              table#stab tr:nth-child(even) 
+              {
+                background-color: #eee;
+              }
+              table#stab tr:nth-child(odd) 
+              {
+                background-color: #fff;
+              }
+              table#stab th 
+              {
+                color: white;
+                background-color: black;
+                text-align: center;
+              }
+
+/*table styles*/
+
+	.loading
+		{
+			position: absolute;
+			left:40%;
+			display:none;
+		}
+	#datesFlex
+		{
+			display: flex;
+			justify-content: space-between;
+			width:80%;
+			margin:auto;
+			margin-top:20px;
+		}
+	.dateBox
+		{
+			border:1px solid red;
+			border-radius: 5px;
+			cursor: pointer;;
+		}
+	#states-select,#districts-select
+		{
+			height: 50px;
+			/*font-weight: bold;*/
+			font-size: 1.2em;
+		}
+	</style>
+</head>
+<body>
+	<div class="loading">
+        <img
+          src="https://raw.githubusercontent.com/CodingGarden/meower/master/client/loading.gif"
+          alt=""
+        />
+    </div>
+
+	<div class="button-panel">
+
+		<div class="button-container">
+			<button class="generic-button" onClick="getStates()">States</button>
+		</div>
+		<div class="button-container">
+			<button class="generic-button" onClick="PullData()">Pull Data</button>
+		</div>
+
+		<!-- <div class="button-container">
+			<input id="dt" type="date" onchange="dateChanged()"/>
+		</div> -->
+
+		<div class="button-container">
+			<select id='states-select' onchange="stateChanged(this)" >
+				<option value="none">--</option>				
+			</select>
+		</div>
+
+		<div class="button-container">
+			<select id='districts-select' onchange="districtChanged(this)" >
+				<option value="none">--</option>				
+			</select>
+		</div>
+
+	</div>
+	<div id='datesFlex'></div>
+	
+	<div id="tablereg">
+		<table id='stab'>
+			<thead>
+			<tr>
+				<th>Date</th>
+				<th>CenterID</th>
+				<th>CenterName</th>
+				<th>Dose1</th>
+				<th>Dose2</th>
+				<th>Minimum Age</th>
+				<th>Vaccine</th>
+				<th>Fee</th>
+			</tr>
+			</thead>
+			<tbody id="tbody">
+			
+			</tbody>
+		</table>
+	</div>
+	<div id="raw-data"></div>
+	<script>
+		let displayDates=()=>
+			{
+				document.querySelector('#datesFlex').innerHTML='';
+				for(let i=0;i<10;i++)
+					{
+						document.querySelector('#datesFlex').innerHTML+=`<button class='dateBox' onclick='getDateFilteredData(this)'>${addDays(i)}</button>`;
+					}
+			}
+		let getDateFilteredData=(elem)=>
+			{
+				let dt=elem.innerHTML;
+				//console.log(elem.innerHTML);
+				
+				//let localDatax={...localData['data']};
+				let localDatax=JSON.parse(JSON.stringify(localData['data']));
+
+				
+				for(let i in localDatax.centers)
+					{
+						localDatax.centers[i].sessions=localDatax.centers[i].sessions.filter(x=>x.date==dt);
+					}
+				localDatax.centers=localDatax.centers.filter(x=>x.sessions.length!=0);
+				LayoutinTable(localDatax);
+				
+
+			}
+		let checkForLocallyStoredContent=()=>
+			{
+				if(localDataExists('states'))
+					prepareDropdown(localData['states'],'states');
+				else
+				{
+					getStates();
+					console.log('states pulled from website');
+				}
+				if(localDataExists('districts'))
+					prepareDropdown(localData['districts'],'districts');
+				if(localDataExists('data'))
+					LayoutinTable(localData['data']);
+				if(localDataExists('selectedStateId'))
+				{
+					selectedStateId=localData['selectedStateId'];
+					document.querySelector('#states-select').value=selectedStateId;
+				}
+				if(localDataExists('selectedDistrictId'))
+				{
+					selectedDistrictId=localData['selectedDistrictId'];
+					document.querySelector('#districts-select').value=selectedDistrictId;
+				}
+			}
+		checkForLocallyStoredContent();
+		displayDates();
+	</script>
+</body>
+</html>
+

@@ -5,3 +5,9 @@ Regular Expressions
     print(re.match('[a-z]+','hello people')) returns hello , but
     print(re.match('[a-z]+','3hello people'))  returns false
     This is unlike re.search
+
+* subprocess.Popen("dir /b",shell=True)
+
+
+*netsh wlan show profile  --shows list of all wifi's that the system has ever connected to
+*netsh wlan show profile wifiname key=clear --shows all information including password
