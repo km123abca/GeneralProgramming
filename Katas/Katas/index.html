@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript">
+		var hidVal=10;
+		const hideElems=()=>
+					        {
+					        	for(i in document.getElementsByClassName('contText'))
+					        		{
+					        			if(i==hidVal) continue;
+					        			try{
+					        			document.getElementsByClassName('contText')[i].style.display="none";
+					        				}
+					        			catch(err)
+					        				{
+					        					;
+					        				}
+					        		}
+					        }
+	</script>
+	<title>	Pete the Baker</title>
+	<style>
+			body{
+				background-color:#3d3d3d;
+			}
+			.cont{
+				max-width: 1000px;
+				margin:auto;
+				color:#FFFFFF;
+				margin-bottom: 20px;
+				/*display: flex;*/
+				
+			}
+			.lin{
+				text-decoration: none;
+
+			}
+
+			.inpPanelMember{
+
+			}
+			.contText{
+				max-width: 1000px;
+				margin:auto;
+				color:#FFFFFF;
+				margin-bottom: 20px;
+			}
+			.darkinput{
+				padding-top: 25px;
+				outline: none;
+				background-color:#3d3d3d;
+				color:white;
+				border: none;
+				border-bottom: 2px solid black;
+				font-size: 16px;
+				width: 600px;
+				margin-right: 10px;
+			}
+			.inputButtonPanel{
+				display:flex;
+				/*justify-content: space-between;*/
+				flex-wrap: wrap;
+			}
+			.btn{
+				cursor:pointer;
+				border-radius: 3px;
+				font-weight: bold;
+				color: white;
+				background-color: #3d3d3d;
+				height: 40px;
+				min-width:200px;
+				margin-top:20px;
+				margin-left:10px;
+			}
+			.btn:hover{
+				opacity: 0.5;
+			}
+			.probButtons{
+				display: flex;
+				flex-wrap: wrap;
+
+			}
+			.lin{
+				color:white;
+				font-weight: bold;
+			}
+			table#qtab tr:nth-child(even) 
+              {
+                background-color: #eee;
+                color:black;
+              }
+              table#qtab tr:nth-child(odd) 
+              {
+                background-color: #fff;
+                color:black;
+              }
+
+	</style>
+	<script>
+		Analyse=()=>
+					{
+						let inp=document.querySelector("#inp").value;
+						if (!inp.match(/[a-zA-Z0-9]+/))
+						{
+							alert("input trouble");
+						}
+						else
+						{
+							ProcessStuff(inp);
+						}
+					};
+		ProcessStuff=(x)=>
+						{
+							alert("You have Entered:"+x+" but no logic has been added yet");
+							// let cont=JSON.parse(x);
+							// let recipe=JSON.parse(x)[0];
+							// let ingredients=JSON.parse(x)[1];
+
+							// return cont;
+						}
+	//Answers
+		cakes=(recipe,available)=>
+						{
+							let maxCakes=99999999;
+							let found=false;
+							for (let x in recipe)
+							{
+								found=false;
+								for(let y in available)
+									{
+									if(x==y)
+										{
+										  found=true;
+										  if(maxCakes > parseInt(available[y]/recipe[x]))
+										  	maxCakes=parseInt(available[y]/recipe[x]);
+										  continue;
+										}
+									
+									}
+								if(!found) return 0;
+							}
+							return maxCakes;
+						}
+
+		/*
+		function cakes(recipe, available) {
+  return Object.keys(recipe).reduce(function(val, ingredient) {
+    return Math.min(Math.floor(available[ingredient] / recipe[ingredient] || 0), val)
+  }, Infinity)  
+}
+
+
+const cakes = (needs, has) => Math.min(
+  ...Object.keys(needs).map(key => Math.floor(has[key] / needs[key] || 0))
+)
+
+
+		*/
+
+function pickPeaks(arr){
+			let pos=[],peaks=[];
+			let lowerMost=-Infinity;
+			let tempPos=lowerMost,tempPeak=lowerMost;
+			for(i in arr)
+				{
+					if(i==0) continue;
+					if(tempPos!=lowerMost)
+					{
+						if(arr[i]<tempPeak)
+						{
+							pos.push(tempPos);
+							peaks.push(tempPeak);
+							tempInd=tempPeak=lowerMost;
+							continue;
+						}
+
+					}
+					if(arr[i] > arr[i-1])
+					{
+						tempPeak=arr[i];
+						tempPos=parseInt(i);
+					}
+				}
+  
+   			return ({pos:pos,peaks:peaks})
+		}
+		/*
+		Minion kevin
+		function pickPeaks(arr){
+  var result = {pos: [], peaks: []};
+  if(arr.length > 2) {
+    var pos = -1;
+    for(var i=1; i<arr.length;i++){
+      if(arr[i] > arr[i-1]) {
+        pos = i;
+      } else if(arr[i] < arr[i-1] && pos != -1) {
+        result.pos.push(pos);
+        result.peaks.push(arr[pos]);
+        pos = -1;
+      }
+    }
+  }
+  return result;
+}
+		*/
+
+
+/* Failed attempt
+function sumIntervalsold(intervals){
+  let tempIntervals=[];
+  let fullyEnclosed=false;
+  for(i in intervals)
+  		{
+  			head_index=-1;
+  			tail_index=-1;
+  			enclosed_indices=[];
+  			fullyEnclosed=false;
+  			for(j in tempIntervals)
+  			{
+  				if(intervals[i][0] >= tempIntervals[j][0] && intervals[i][0] <= tempIntervals[j][1])
+  				{
+  					if(!(intervals[i][1] >= tempIntervals[j][0] && intervals[i][1] <= tempIntervals[j][1]))
+  						{
+  						head_index=j; 
+  						continue; 						
+  						}  		
+  					else
+  						{
+  							fullyEnclosed=true;
+  							break;
+  						}	
+  							
+  				}
+				if(intervals[i][1] >= tempIntervals[j][0] && intervals[i][1] <= tempIntervals[j][1])
+  				{  		
+  				  if(!(intervals[i][0] >= tempIntervals[j][0] && intervals[i][0] <= tempIntervals[j][1]))
+  				  		{			
+  						tail_index=j;
+  						continue;
+  						}
+  				  else
+  				  		{
+  				  			fullyEnclosed=true;
+  				  			break;
+  				  		}
+  				}
+  				if(tempIntervals[j][0]>=intervals[i][0] && tempIntervals[j][0]<=intervals[i][1] )
+  				if(tempIntervals[j][1]>=intervals[i][0] && tempIntervals[j][1]<=intervals[i][1] )
+  					enclosed_indices.push(j);
+  			}
+  			if(!fullyEnclosed)
+  			{
+  				for(ind of enclosed_indices)
+  				{
+  					tempIntervals=tempIntervals.filter(x=>x[0]!=tempIntervals[ind][0] && x[1]!=tempIntervals[ind][1]);
+  				}
+  				let newEntry=[...intervals[i]]
+  				if(head_index != -1)
+  				{
+  					newEntry[0]=tempIntervals[head_index][0];
+  					tempIntervals=tempIntervals.filter(x=>x[0]!=tempIntervals[head_index][0]&&x[1]!=tempIntervals[head_index][1]);
+  				}
+  				if(tail_index!=-1)
+  				{
+  					newEntry[1]=tempIntervals[tail_index][1];
+  					tempIntervals=tempIntervals.filter(x=>x[0]!=tempIntervals[tail_index][0]&&x[1]!=tempIntervals[tail_index][1]);
+  				}
+  				tempIntervals.push(newEntry);
+  			}
+
+  		}
+
+  		
+  		return tempIntervals.reduce((sum,elem)=>sum+=elem[1]-elem[0],0);
+}
+
+*/
+
+function sumIntervals(intervals)
+	{
+		let head=1,tail=0;
+		intervals.sort((x,y)=>x[0]-y[0]);		
+		return intervals.reduce((summ,x)=>
+										  {
+										  	if(head > tail || x[0]>tail)
+										  		{										  			
+									  			head=x[0];
+									  			tail=x[1];
+									  			summ+=tail-head;										  			
+										  		}
+										  	else if(tail < x[1] )
+										  		{										  										  			
+									  			summ+=x[1]-tail;
+									  			tail=x[1];
+										  		}
+										  	return summ;
+										  },
+								 0
+			                   );
+	}
+// mert574
+// function sumIntervals(intervals) {
+//   const ranges = new Set();
+  
+//   intervals.forEach(([start, end]) => {
+//     for (let i = start; i < end; i++) ranges.add(i);
+//   });
+  
+//   return ranges.size;
+// }
+
+//bu7ch
+// function sumIntervals(intervals){
+//   var numbers = [];
+//   intervals.forEach( function(interval) {
+//     for (var i = interval[0] ; i < interval[1] ; i++) {
+//       if (numbers.indexOf(i) == -1) numbers.push(i);
+//     }
+//   });
+//   return numbers.length;
+// }
+
+
+function add(a,b){
+	if(b.length > a.length)
+	a=Array(b.length-a.length).fill(0).join('')+a;
+	else
+	b=Array(a.length-b.length).fill(0).join('')+b;
+	let result='';
+	let z=0;	
+	while(a.length>0)
+	{
+		
+		let summ=parseInt(a[a.length-1]) + parseInt(b[b.length-1])+z;
+		summ+='';
+		if(summ.length>1) z=parseInt(summ[0]);
+		else z=0;
+		result=summ[summ.length-1]+result;
+		if(a.length > 1)
+		{
+		a=a.slice(0,a.length-1);
+		b=b.slice(0,b.length-1);
+		}
+		else
+		{
+		result=z>0?z+result:result;
+		a='';
+		}
+	}
+	return result;
+	
+}
+/*
+function add (a, b) {
+  var res = '', c = 0
+  a = a.split('')
+  b = b.split('')
+  while (a.length || b.length || c) {
+    c += ~~a.pop() + ~~b.pop()
+    res = c % 10 + res
+    c = c > 9
+  }
+  return res
+}
+*/
+
+
+function validSolution(board){
+  for(row of board)
+  {
+  	arr=[];
+  	for (elem of row)
+  	{
+  		if(elem==0) return false;
+  		if(arr.indexOf(elem)!=-1) return false;
+  		else arr.push(elem);
+  	}
+  }
+  for(j=0;j< 9;j++)
+  {
+  	arr=[];
+  	for(i=0;i<9;i++)
+  	{
+  		if(board[i][j]==0) return false;
+  		if(arr.indexOf(board[i][j])!=-1) return false;
+  		else arr.push(board[i][j]);
+  	}
+  }
+  for(i=0;i<9;i+=3)
+  for(j=0;j<9;j+=3)
+  {
+  	arr=[];
+  	for(k=i;k< i+3;k++)
+  		for(l=j;l<j+3;l++)
+  		{
+  			if(board[k][l]==0) return false;
+  			if(arr.indexOf(board[k][l])!=-1) return false;
+  			else arr.push(board[k][l]);
+  		}
+  }
+  return true;
+}
+/*
+function equals45(n){
+  return n == 45;
+}
+
+function validSolution(board){
+  var sumh = [0,0,0,0,0,0,0,0,0];
+  var sumv = [0,0,0,0,0,0,0,0,0];
+  osums = [[0,0,0],[0,0,0],[0,0,0]];
+  for (var i=0;i<9;i++){
+    for (var j=0;j<9;j++){
+      sumh[i] += board[i][j];
+      sumv[j] += board[i][j];
+      osums[Math.floor(i/3)][Math.floor(j/3)] += board[i][j];
+    }
+  }
+  for (var i=0;i<3;i++) if (!osums[i].every(equals45)) return false;
+  return (sumh.every(equals45) && sumv.every(equals45));
+}
+*/
+
+GetSum=(num,n)=>{
+	if(n==1) return [[num]];
+	let possibleCombs=[];
+	let firstMember=1;
+	while(num-firstMember >= n-1)
+	{ 
+		let secondMembers=GetSum(num-firstMember,n-1);
+		for(secondMember of secondMembers)
+		if(possibleCombs.map(x=>x.sort((a,b)=>a-b).reduce((comb,y)=>comb+=y+'-','')).indexOf([...secondMember,firstMember].sort((a,b)=>a-b).reduce((comb,y)=>comb+=y+'-',''))==-1)
+			possibleCombs.push([firstMember,...secondMember]);
+		firstMember+=1;		
+	}
+	return possibleCombs;
+}
+AllCombs=(num)=>{
+	let all=[];
+	for(i=1;i<=num;i++)
+		all=[...all,...GetSum(num,i)];
+	return JSON.stringify(all);
+}
+
+AllCombs2=(num,maxAllowed)=>{
+	// console.log("called with "+num+","+maxAllowed);
+	if(num == maxAllowed || num==0) return 1;
+	if(num < maxAllowed) return 0;
+	if(num < 2* maxAllowed) return 1;
+	
+	let i=0;
+	let numPosibs=0;
+	while(num >= i*maxAllowed)
+	{
+		let res= AllCombs2(num- i*maxAllowed,maxAllowed+1);
+		// if(res==0) break;
+		numPosibs+=res;
+		i+=1;
+	}
+	return numPosibs;
+}
+function sumx(num)
+	{
+		return AllCombs2(num,1);
+	}
+
+let storedVals=[[1]];
+function sumx2(num)
+	{
+		if(num==1) return 1;
+		storedVals.push([]);
+		for(j=1;j<num;j++)
+		{
+			let sum=0;
+			for(k=j;k<=num-j;k++)
+				{
+					sum+=storedVals[num-j-1][k-1];
+				}			
+			storedVals[num-1].push(sum);
+		}
+		storedVals[num-1].push(1);
+
+	}
+function calcSums(num)
+	{
+		for(let i=2;i<=num;i++)
+			sumx2(i);
+		retval= storedVals[num-1].reduce((sum2,x)=>sum2+=x,0);
+		storedVals=[[1]];
+		return retval;
+	}
+
+//nhpatt's solution
+var memo = [];
+function sum_out(n, m = n) {
+    if (n == 0) return 1;
+    if (n < 0 || m == 0) return 0;
+    if (memo[n] && memo[n][m]) return memo[n][m];
+    let total = sum_out(n, m - 1) + sum_out(n - m, m);
+    if (!memo[n]) {
+        memo[n] = [];
+    }
+    memo[n][m] = total;
+    return total;
+}
+
+romMap={1:'I',5:'V',10:'X',50:'L',100:'C',500:'D',1000:'M'};
+revRomMap={'Z':0,'I':1,'V':5,'X':10,'L':50,'C':100,'D':500,'M':1000};
+RomanNumerals={
+	toRoman:function(num)
+			  {
+			  	if(num==0) return '';
+			  	temp=num;
+			  	mult=1;
+			  	while(temp >= 10)
+			  	{
+			  		temp=parseInt(temp/10);
+			  		mult*=10;
+			  	}
+
+			  	let result='';
+			  	if(temp <=3)			  		
+			  		result=Array(temp).fill(romMap[mult]).join('');
+			  	else if(temp==4)
+			  		result=romMap[mult]+romMap[5*mult];
+			  	else if(temp==5)
+			  		result=romMap[5*mult];
+			  	else if(temp>5 && temp<9)
+			  		result=romMap[5*mult]+Array(temp-5).fill(romMap[mult]).join('');
+			  	else 
+			  		result=romMap[mult]+romMap[mult*10];
+
+			  	return result+RomanNumerals.toRoman(num-temp*mult);
+			  },
+	fromRoman:function(romanString)
+			  {
+			  	prevChar='Z';
+			  	growingNum=0;
+			  	while(romanString!='')
+			  	{
+			  		num=revRomMap[romanString[0]];
+			  		if(num > revRomMap[prevChar])
+			  			growingNum+=num - 2*revRomMap[prevChar];
+			  		else
+			  			growingNum+=num;
+			  		prevChar=romanString[0];			  		
+			  		romanString=romanString.slice(1,romanString.length);
+			      // console.log(growingNum);
+			  	}
+			  	return growingNum;
+			  }
+};//MMDCXIX
+
+/*
+Marco Polo's solution
+// TODO: create a RomanNumerals helper object
+var numerals = [
+  ['M', 1000],
+  ['CM', 900],
+  ['D', 500],
+  ['CD', 400],
+  ['C', 100],
+  ['XC', 90],
+  ['L', 50],
+  ['XL', 40],
+  ['X', 10],
+  ['IX', 9],
+  ['V', 5],
+  ['IV', 4],
+  ['I', 1]
+];
+
+RomanNumerals = {
+  toRoman: function(v) {
+    var s = '';
+    numerals.forEach(function(n) {
+      while (v >= n[1]) {
+        s += n[0];
+        v -= n[1]; 
+      }
+    });
+    return s;
+  },
+  fromRoman: function(s) {
+    var v = 0;
+    numerals.forEach(function(n) {
+      while (s.substr(0, n[0].length) == n[0]) {
+        s = s.substr(n[0].length);
+        v += n[1];
+      }
+    });
+    return v;
+  }
+};
+
+*/
+
+function solutioncat(input,markers)
+	{
+		inputArr=input.split("\n");
+		outputArr=[];
+		for(line of inputArr)
+		{
+			leastPos=line.length;
+			for(marker of markers)
+			{
+				pos=line.indexOf(marker);
+				if(pos==-1) continue;
+				if(pos < leastPos)
+					leastPos=pos;
+			}
+			line=line.slice(0,leastPos);
+			outputArr.push(line.trim());
+
+		}
+		return outputArr.join('\n');
+	}
+
+/*
+function solution(input, markers) {
+  return input.split('\n').map(
+    line => markers.reduce(
+      (line, marker) => line.split(marker)[0].trim(), line
+    )
+  ).join('\n')
+}
+*/
+
+function decompose(n)
+	{
+		res=sosquares(n**2);
+		if(res=="nothing") return "nothing";
+		res=res.filter(x=>x.length!=1);
+		if(res.length==0) return "nothing";
+		offset=1;
+		while(res.length > 1)
+			{
+				largest=res.reduce((lgst,x)=>x[x.length-offset]>lgst?x[x.length-offset]:lgst,-1);
+				res=res.filter(x=>x[x.length-offset]==largest);
+				offset+=1;
+				if(offset>10) break;
+			}
+		return res;
+	}
+
+function sosquares(n,ind=0,stackvar=0)
+	{
+		if(stackvar > 1000) 
+		{
+			alert('dangerous depth');
+			console.log('dangerous depth');
+			return "nothing";
+		}
+		if(n==0 ) return [[]];
+
+		if (n<0 || n<=ind) return "nothing";
+		let x=ind+1;
+		while(Math.sqrt(x)!=Math.floor(Math.sqrt(x)) ) 
+		{
+			x+=1;
+			if(x > n) return "nothing";
+		}		
+		let leftSequences=sosquares(n-x,x,stackvar+1);
+		let rightSequences=sosquares(n,x,stackvar+1);
+
+		result=[];
+		if(leftSequences!="nothing") result.push(...leftSequences.map(val=>[Math.sqrt(x),...val]));
+		if(rightSequences!="nothing") result.push(...rightSequences);
+		if(result.length==0) return "nothing";
+		return result;
+	}
+
+function decompose(n)
+	{
+        res=sosquares3(n*n,n-1);        
+		return res;
+	}
+function sosquares3(n,m)
+	{
+		// if(prevResults[n+':'+m])
+		// 	return prevResults[n+':'+m];
+		msq=m*m;
+		let sumT=0;
+		let brkFlg=true;
+		for(let i=m;i>=1;i--)
+			{
+			sumT+=i*i;
+			if(sumT >= n)
+				{
+				brkFlg=false; 
+				break;
+				}
+			}
+		if(brkFlg) 
+			{
+			// console.log(`received ${n},${m} returning nothing since tgt unacheivable`);
+			return "nothing";		
+			}
+		if(msq==n) 
+			{
+			// console.log(`received ${n},${m} returning ${[m]}`);
+			// console.log("hiya");
+			return [m];
+			}		
+		let leftSequences="nothing";
+		if(msq < n) 
+			{			
+			leftSequences=sosquares3(n-msq,m-1);	
+			if(leftSequences!="nothing")
+				{
+				leftSequences.push(m);
+				// prevResults[n+':'+m]=leftSequences;
+				return leftSequences;				
+				
+				// return [m,...leftSequences];
+				}		
+			}
+		// console.log("right with "+n+" "+(m-1));
+		rightSequences=sosquares3(n,m-1);
+		// prevResults[n+':'+m]=rightSequences;
+		return rightSequences;		
+	}
+
+function formatDuration (seconds) {
+  let titles=['second','minute','hour','day','year'];
+  let div=[60,60,24,365]
+  let vals=[],i=0;
+  while(seconds > 0 && i<4)
+  {
+  	vals.push(seconds%div[i]);
+  	seconds=parseInt(seconds/div[i]);
+  	i+=1;
+  }
+   vals.push(seconds); 
+  let titleIndex=vals.length-1;
+  let resString='';
+  for(let i=titleIndex;i>=0;i--)
+  {
+  	let tail='';
+  	if(vals.slice(0,i).filter(x=>x!=0).length > 1)  tail=", ";
+  	else if(vals.slice(0,i).filter(x=>x!=0).length == 1) tail=" and ";
+  	if(vals[i]==0) continue;
+  	if(vals[i]>1) tail="s"+tail;
+  	resString+=vals[i]+' '+titles[i]+tail;
+
+  }
+  return resString==''?"now":resString;
+}
+
+function formatDuration_omgo (seconds) {
+  var time = { year: 31536000, day: 86400, hour: 3600, minute: 60, second: 1 },
+      res = [];
+
+  if (seconds === 0) return 'now';
+  
+  for (var key in time) {
+    if (seconds >= time[key]) {
+      var val = Math.floor(seconds/time[key]);
+      res.push(val += val > 1 ? ' ' + key + 's' : ' ' + key);
+      seconds = seconds % time[key];
+    }
+  }
+ 
+  return res.length > 1 ? res.join(', ').replace(/,([^,]*)$/,' and'+'$1') : res[0]
+}
+var removeChar=(line,charx)=>{
+	while(line.indexOf(charx)!=-1) line=line.replace(charx,'');
+	return line;
+}
+
+var justify = function(str, len) {
+  let lines=[];
+  let t=0;
+  while(str.length > 0)
+  {
+  	t+=1;
+  	if(t> 100) break;
+
+  	lines.push(str.slice(0,len));
+  	str=str.slice(len,str.length);
+  }
+  for(let i in lines)
+  {
+  	if(i==lines.length-1)
+  	{
+  		break;
+  	}
+  	lines[i]=lines[i].trim();
+  	let n=lines[i].replace(/[\s]+/g,'').length;
+  	let wordArray=lines[i].replace(/[\s]+/g,' ').split(' ');
+  	let numWords=wordArray.length;
+  	let emptySpaces=lines[i].length-n;
+  	let fixedSpaces=parseInt(emptySpaces/(numWords-1));
+  	let addedSpaces=emptySpaces%(numWords-1); 
+  	let result=''; 	
+  	for(let j=0;j< wordArray.length-1;j++)
+  		{
+  			result+=wordArray[j]+Array(fixedSpaces).fill(0).reduce((x,y)=>x+=' ','')+(addedSpaces>0?' ':'');
+  			addedSpaces--;
+  		}
+  	result+=wordArray[j];
+  	lines[i]=result;
+  }
+};
+
+
+
+
+
+function tempP(res)
+{
+	offset=1;
+	while(res.length > 1)
+		{
+			largest=res.reduce((lgst,x)=>x[x.length-offset]>lgst?x[x.length-offset]:lgst,-1);
+			res=res.filter(x=>x[x.length-offset]==largest);
+			offset+=1;
+			if(offset>10) break;
+		}
+	return res;
+
+}		
+
+		GetProblem=(indexx)=>
+					   {
+					   	// document.querySelector("#probcont").innerHTML=probs[indexx];
+					   	let allElems=document.getElementsByClassName("contText");
+					   	for(i in allElems)
+					   		{
+					   			try{
+					   			if(i!=indexx)
+					   				allElems[i].style.display="none";
+					   			else
+					   				allElems[i].style.display="block";
+					   				}
+					   			catch(err)
+					   				{
+					   					console.log(err.message);
+					   				}
+					   		}
+					   	
+					   }
+		
+	</script>
+</head>
+<body>
+<div class="probButtons">
+	<button class="btn" onClick="GetProblem(0)">Pete the baker</button>
+	<button class="btn" onClick="GetProblem(1)">Find Peaks</button>
+	<button class="btn" onClick="GetProblem(2)">Intervals</button>
+	<button class="btn" onClick="GetProblem(3)">Big Numbers</button>
+	<button class="btn" onClick="GetProblem(4)">Sudoku Validator</button>
+	<button class="btn" onClick="GetProblem(5)">Integer Partition</button>
+	<button class="btn" onClick="GetProblem(6)">Roman Numeral Conv</button>
+	<button class="btn" onClick="GetProblem(7)">Removing comment markers</button>
+	<button class="btn" onClick="GetProblem(8)">Squrare into squares</button>
+	<button class="btn" onClick="GetProblem(9)">Date formatting</button>
+	<button class="btn" onClick="GetProblem(10)">Text Justification</button>
+</div>
+
+<div class="contText" id="probcont0">
+Pete likes to bake some cakes. He has some recipes and ingredients. Unfortunately he is not good in maths. Can you help him to find out, how many cakes he could bake considering his recipes? <br/>
+
+Write a function cakes(), which takes the recipe (object) and the available ingredients (also an object) and returns the maximum number of cakes Pete can bake (integer). For simplicity there are no units for the amounts (e.g. 1 lb of flour or 200 g of sugar are simply 1 or 200). Ingredients that are not present in the objects, can be considered as 0. <br/><br/>
+
+// must return 2<br/>
+cakes({flour: 500, sugar: 200, eggs: 1}, {flour: 1200, sugar: 1200, eggs: 5, milk: 200}); <br/>
+// must return 0<br/>
+cakes({apples: 3, flour: 300, sugar: 150, milk: 100, oil: 100}, {sugar: 500, flour: 2000, milk: 2000}); 
+</div>
+
+<div class="contText" id="probcont1">
+	<a href="https://www.codewars.com/kata/5279f6fe5ab7f447890006a7/train/javascript" class="lin">Link to question</a><br/>
+	In this kata, you will write a function that returns the positions and the values of the "peaks" (or local maxima) of a numeric array. <br/>
+
+For example, the array arr = [0, 1, 2, 5, 1, 0] has a peak at position 3 with a value of 5 (since arr[3] equals 5).<br/>
+
+The output will be returned as an object with two properties: pos and peaks. Both of these properties should be arrays. If there is no peak in the given array, then the output should be {pos: [], peaks: []}.<br/><br/><br/>
+
+Example: pickPeaks([3, 2, 3, 6, 4, 1, 2, 3, 2, 1, 2, 3]) should return {pos: [3, 7], peaks: [6, 3]} (or equivalent in other languages)<br/>
+
+All input arrays will be valid integer arrays (although it could still be empty), so you won't need to validate the input.<br/>
+
+The first and last elements of the array will not be considered as peaks (in the context of a mathematical function, we don't know what is after and before and therefore, we don't know if it is a peak or not).<br/>
+<br/>
+Also, beware of plateaus !!! [1, 2, 2, 2, 1] has a peak while [1, 2, 2, 2, 3] and [1, 2, 2, 2, 2] do not. In case of a plateau-peak, please only return the position and value of the beginning of the plateau. For example: pickPeaks([1, 2, 2, 2, 1]) returns {pos: [1], peaks: [2]} (or equivalent in other languages)<br/>
+<a href="https://www.codewars.com/kata/52b7ed099cdc285c300001cd/javascript" class="lin">Next Kata</a><br/>
+</div>
+
+<div class="contText" id="probcont2">
+	<a href="https://www.codewars.com/kata/52b7ed099cdc285c300001cd/train/javascript" class="lin"> Kata</a><br/>
+	Write a function called sumIntervals/sum_intervals() that accepts an array of intervals, and returns the sum of all the interval lengths. Overlapping intervals should only be counted once.
+Intervals <br/>
+Intervals are represented by a pair of integers in the form of an array. The first value of the interval will always be less than the second value. <br/>Interval example: [1, 5] is an interval from 1 to 5. The length of this interval is 4.
+</div>
+<div class="contText" id="probcont3">
+	<a href="https://www.codewars.com/kata/525f4206b73515bffb000b21/train/javascript" class="lin">Link to Question</a> <br/>
+	We need to sum big numbers and we require your help.<br/>Write a function that returns the sum of two numbers. <br/>The input numbers are strings and the function must return a string.
+	<br/>add("123", "321"); -> "444" <br/>add("11", "99");   -> "110"
+	<ul>
+		<li>The input numbers are big.</li>
+		<li>The input is a string of only digits</li>
+		<li>The numbers are positives</li>
+	</ul>
+
+</div>
+
+<div class="contText" id="probcont4">
+	<a href="https://www.codewars.com/kata/529bf0e9bdf7657179000008/train/javascript" class="lin">Link to Question</a> <br/><br/>
+	Write a function validSolution/ValidateSolution/valid_solution() that accepts a 2D array representing a Sudoku board, and returns true if it is a valid solution, or false otherwise.<br/> 
+	The cells of the sudoku board may also contain 0's, which will represent empty cells. Boards containing one or more zeroes are considered to be invalid solutions.<br/>
+The board is always 9 cells by 9 cells, and every cell only contains integers from 0 to 9.
+</div>
+
+<div class="contText" id="probcont5">
+	<a href="https://www.codewars.com/kata/52ec24228a515e620b0005ef/train/javascript" class="lin">Link to Question</a> <br/>
+	In number theory and combinatorics, a partition of a positive integer n, also called an integer partition, is a way of writing n as a
+	<br/> sum of positive integers. Two sums that differ only in the order of their summands are considered the same partition. <br/>If order matters, the sum becomes a composition. For example, 4 can be partitioned in five distinct ways:<br/>
+	sum(4) // 5 -> 1+1+1+1, 1+1+2, 1+3, 2+2, 4<br/>
+sum(5) // 7 -> 1+1+1+1+1, 1+1+1+2, 1+1+3, 1+2+2, 1+4, 5, 2+3
+</div>
+
+<div class="contText" id="probcont6">
+	<a href="https://www.codewars.com/kata/51b66044bce5799a7f000003/train/javascript" class="lin">Link to Question</a> <br/>
+Create a RomanNumerals class that can convert a roman numeral to and from an integer value. It should follow the API demonstrated in the examples below. <br/>
+Multiple roman numeral values will be tested for each helper method.<br/>
+
+Modern Roman numerals are written by expressing each digit separately starting with the left most digit and skipping any digit with a value of zero. In Roman numerals 1990 is rendered: 1000=M, 900=CM, 90=XC; resulting in MCMXC. 2008 is written as 2000=MM, 8=VIII; or MMVIII. 1666 uses each Roman symbol in descending order: MDCLXVI.<br/>
+
+Input range : 1 <= n < 4000<br/>
+
+In this kata 4 should be represented as IV, NOT as IIII (the "watchmaker's four").<br/>
+<table id="qtab">
+	<tr><th>Symbol</th><th>Value</th></tr>
+	<tr><td>I</td><td>1</td></tr>
+	<tr><td>IV</td><td>4</td></tr>
+	<tr><td>V</td><td>5</td></tr>
+	<tr><td>X</td><td>10</td></tr>
+	<tr><td>L</td><td>50</td></tr>
+	<tr><td>C</td><td>100</td></tr>
+	<tr><td>D</td><td>500</td></tr>
+	<tr><td>M</td><td>1000</td></tr>
+</table>
+	
+
+</div>
+
+<div class="contText" id="probcont7">
+	<a href="https://www.codewars.com/kata/51c8e37cee245da6b40000bd/train/javascript" class="lin">Link to Question</a> <br/><br/>
+	Removing Comment markers
+</div>
+
+<div class="contText" id="probcont8">
+	<a href="https://www.codewars.com/kata/54eb33e5bc1a25440d000891/train/javascript" class="lin">Link to Question</a> <br/><br/>
+	Square into squares
+	<p>
+		decompose(11) must return [1,2,4,10]. Note that there are actually two ways to decompose 11², 11² = 121 = 1 + 4 + 16 + 100 = 1² + 2² + 4² + 10² but don't return [2,6,9], since 9 is smaller than 10.
+	</p>
+</div>
+
+<div class="contText" id="probcont9">
+<a href="https://www.codewars.com/kata/537e18b6147aa838f600001b/train/javascript" class="lin">Link to Question</a> <br/><br/>
+Your task in order to complete this Kata is to write a function which formats a duration, given as a number of seconds, in a human-friendly way.<br/>The function must accept a non-negative integer. If it is zero, it just returns "now". <br/>
+Otherwise, the duration is expressed as a combination of years, days, hours, minutes and seconds.<br/>
+For example
+<h3>formatDuration(3662)  // returns "1 hour, 1 minute and 2 seconds"</h3>
+</div>
+
+<div class="contText" id="probcont10">
+
+	<a href="https://www.codewars.com/kata/537e18b6147aa838f600001b/train/javascript" class="lin">Link to Question</a> <br/><br/>
+	Implementing text justification
+<ul>
+<li>Create justify(str,len) where len is the length of each line</li>
+<li>Use spaces to fill in the gaps between words.</li>
+<li>Each line should contain as many words as possible.</li>
+<li>Use '\n' to separate lines.</li>
+<li>Gap between words can't differ by more than one space.</li>
+<li>Lines should end with a word not a space.</li>
+<li>'\n' is not included in the length of a line.</li>
+<li>Large gaps go first, then smaller ones ('Lorem--ipsum--dolor--sit-amet,' (2, 2, 2, 1 spaces)).</li>
+<li>Last line should not be justified, use only one space between words.</li>
+<li>Last line should not contain '\n'</li>
+<li>Strings with one word do not need gaps ('somelongword\n').</li>
+</ul>
+
+<ol>
+	<li><a href="https://www.codewars.com/kata/search/javascript?q=&r[]=-4" class="lin">Everything</a></li>
+	<li><a href="https://www.codewars.com/kata/56c04261c3fcf33f2d000534/train/javascript" class="lin">Magnet particles in boxes</a></li>	
+	<li><a href="https://www.codewars.com/kata/6158805b7b10b80007ce2c72/train/javascript" class="lin">Nearest Vowel</a></li>
+	<li><a href="https://www.codewars.com/kata/619d3f32156bbd000896463c/train/javascript" class="lin">Prisoners and a light bulb</a></li>
+	<li> <a href="https://www.codewars.com/kata/5886e082a836a691340000c3/train/javascript" class="lin">Points inside a rectangle</a> </li>
+	<li> <a href="https://www.codewars.com/kata/6152be7b9aa70a0033906a18/train/javascript" class="lin">kyu 5 hashing</a> </li>
+	<li> <a href="https://www.codewars.com/kata/60b05d49639df900237ac463/train/javascript" class="lin">Pig Game</a> </li>
+	<li><a href="https://www.codewars.com/kata/582957651c1f59b99b0000aa" class="lin">Find 4 numbers</a></li>
+	<li><a href="https://www.codewars.com/kata/5a3357ae8058425bde002674" class="lin">Iterative cipher</a></li>
+	
+	
+	
+	
+</ol>
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="cont">
+	<div class="inputButtonPanel">
+	<input type="text" class="darkinput inpPanelMember" id="inp"/>
+	<button class="btn inpPanelMember" onClick="Analyse()">Get Results Now</button>
+	</div>
+</div>
+<div class="cont">
+	<input type="text" class="darkinput" id="oup"/>
+</div>
+<script type="text/javascript">
+	hideElems();
+</script>
+</body>
+</html>

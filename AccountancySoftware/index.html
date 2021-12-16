@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Accountancy Stuff</title>
+	<link rel="stylesheet" href="styles.css"/>
+	<script src="./scriptfile.js"></script>
+</head>
+<body>
+<div class="entryblock">	
+	<div class="row">
+		<div class="label" >Debtor :</div>
+		<input type="text" class="inp" id="db"/>		
+	</div>
+	<div class="row">
+		<div class="label">Creditor :</div>
+		<input type="text" class="inp" id="cd"/>		
+	</div>
+	<div class="row">
+		<div class="label">Amount :</div>
+		<input type="text" class="inp" id="amt"/>		
+	</div>	
+	<div class="row">
+		<button class="btn" onClick="LogData()">Log</button>
+	</div>
+</div>
+
+<div class="ledgerSpace" id="ledgerSpace">
+	<table id="stab">
+		<tr><th>Debit</th><th>Credit</th></tr>
+		<tr><td>100</td><td>200</td></tr>
+		<tr><td>100</td><td>200</td></tr>
+	</table>
+	
+	
+</div>
+
+
+</body>
+</html>

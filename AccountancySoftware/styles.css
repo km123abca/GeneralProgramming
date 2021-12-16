@@ -1,0 +1,86 @@
+*{
+	color:white;
+}
+body{
+	background-color:black;
+}
+.row{
+	display:flex;
+	justify-content: space-around;
+}
+.entryblock{
+	max-width:300px;
+	margin:auto;
+	display: flex;
+	justify-content: space-around;
+	height: 200px;
+	border:3px solid red;
+	flex-direction: column;
+
+}
+.inp{
+	color:black;
+}
+.btn{
+	color:black;
+	cursor: pointer;
+	width:50px;
+	height: 30px;
+	text-decoration: none;
+	outline: none;
+	border-radius: 5px;
+}
+.btn:hover{
+	opacity: 50%;
+}
+.ledgerSpace{
+	display:flex;
+	flex-wrap: wrap;
+	align-items:center;
+}
+
+
+	/*Copied from sqlsamplesite */
+			  table#stab 
+              {
+              	
+                width: 33%; 
+                background-color: #f1f1c1;
+                margin-top:10px;
+              }
+              th
+              {
+              text-align: left;
+              }
+              table#stab tr td
+              	{
+              		text-align: center;
+              	}
+              table#stab tr:nth-child(even) 
+              {
+                background-color: #eee;
+              }
+              table#stab tr:nth-child(odd) 
+              {
+                background-color: #fff;
+              }
+              table#stab th 
+              {
+                color: white;
+                background-color: black;
+                text-align: center;
+              }
+	/*Added on 12 June 2018 */
+				table, th, td 
+				{
+			    border: 1px solid black;
+			     text-align: left;
+			    }
+				th
+				{
+					align:"left";
+				}
+				td
+				{
+					color:black;
+				}

@@ -2,9 +2,11 @@
 
 # dependencies
 /node_modules
+/encoder
 /__pycache__
 /.pnp
 .pnp.js
+stuff.txt
 
 # testing
 /coverage
