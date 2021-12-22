@@ -223,12 +223,75 @@ function find4Numberalter(n, k = 4, t = ''){
 IterativeRotationCipher={
 	encode:function(n,strval){
 		let strval_copy=strval;
-		arr=strval.split(/[\s]+/).sort((a,b)=>-1);
-		strr=arr.map((x,ind)=> ind!=arr.length-1?arr[ind+1]:arr[0]).sort((a,b)=>-1).join('');
-		return strr;
+
+		for(let m=0;m<n;m++)
+		{
+			let arr=strval.replace(/[\s]+/g,'').split('').sort((a,b)=>-1);
+			for(let i=0;i<n;i++)
+			arr=arr.map((x,ind)=> ind!=arr.length-1?arr[ind+1]:arr[0]);
+			let strr=arr.sort((a,b)=>-1).join('');
+			let j=0,strr2='';
+			for(let i=0;i<strval_copy.length;i++)
+			{
+				if(strval_copy[i] != ' ')	strr2+=strr[j++];		
+				else strr2+=' ';			
+			}
+			strr=strr2;		
+			strr=strr.split(/[\s]+/g).map(
+				x=>{
+					let arr2=x.split('').sort((a,b)=>-1);
+					for(let i=0;i<n;i++)					
+						arr2=arr2.map((x,ind)=> ind!=arr2.length-1?arr2[ind+1]:arr2[0]);
+					return arr2.sort((a,b)=>-1).join('');					
+				   }
+				).join('');
+			j=0;strr2='';
+			for(let i=0;i<strval_copy.length;i++)
+			{
+				if(strval_copy[i] != ' ')	strr2+=strr[j++];		
+				else strr2+=' ';			
+			}
+
+			strval=strr2;
+		}
+
+		return n+' '+strval;
 	},
-	decode:function(strval){
-		return strval;
+	decode:function(strval){	
+
+		let n=parseInt(strval.match(/^[0-9]+/)[0]);
+		let strval_copy=strval.match(/[\s]{1}.*/)[0].replace(/^[\s]{1}/,'');
+		let strr=strval_copy;
+		for(let m=0;m<n;m++){
+			strr=strr.split(/[\s]+/g).map(
+				x=>{
+					let arr2=x.split('');
+					for(let i=0;i<n;i++)					
+						arr2=arr2.map((x,ind)=> ind!=arr2.length-1?arr2[ind+1]:arr2[0]);
+					return arr2.join('');					
+				   }
+				).join('');
+			
+			let j=0;
+			let strr2='';
+			for(let i=0;i<strval_copy.length;i++)
+			{
+				if(strval_copy[i] != ' ')	strr2+=strr[j++];		
+				else strr2+=' ';			
+			}			
+			let arr=strr2.replace(/[\s]+/g,'').split('');
+			for(let i=0;i<n;i++)
+			arr=arr.map((x,ind)=> ind!=arr.length-1?arr[ind+1]:arr[0]);
+			strr=arr.join('');
+			j=0;strr2='';
+			for(let i=0;i<strval_copy.length;i++)
+			{
+				if(strval_copy[i] != ' ')	strr2+=strr[j++];		
+				else strr2+=' ';			
+			}
+			strr=strr2;
+		}
+		return strr;
 	}
 }
 
@@ -243,7 +306,19 @@ handleReadText=(err,data)=>{
 		// data=simpleHash("hi","salt",2);
 		// data=stopAt(6,20);
 		// data=JSON.stringify(find4Number(99));
-		data=JSON.stringify(IterativeRotationCipher.encode(3,"my man ramos"));
+		// data=JSON.stringify(IterativeRotationCipher.encode(10,"If you wish to make an apple pie from scratch, you must first invent the universe."));
+		// data=JSON.stringify(IterativeRotationCipher.decode("10 hu fmo a,ys vi utie mr snehn rni tvte .ysushou teI fwea pmapi apfrok rei tnocsclet"));
+		// data=JSON.stringify(IterativeRotationCipher.decode("14 daue ilev is a munbune Traurecracy."));
+
+		strxx="True evil is a mundane bureaucracy.";
+		// strxx="10 hu fmo a,ys vi utie mr snehn rni tvte .ysushou teI fwea pmapi apfrok rei tnocsclet";
+		strxx="36 ws h weA dgIaa ug owh n!asrit git \n msm phw teaI'e tanantwhe reos\ns ther! aHeae \'gwadin\nt haw n htoo ,I\'i sy aohOy";
+		n=10;
+		// data=JSON.stringify(IterativeRotationCipher.encode(n,strxx));
+		data=JSON.stringify(IterativeRotationCipher.decode(strxx));
+		
+		
+		
 		fs.writeFile("./datum.json",data,errHandler);
 		}
 }
