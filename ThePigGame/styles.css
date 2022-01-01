@@ -1,0 +1,104 @@
+body{
+	background-color:#4d4d4d;
+}
+
+.buttonPanel{
+	display:flex;
+	justify-content: space-around;
+	margin:auto;
+	max-width:50%;
+	align-items: center;
+}
+@media (max-width:1000px){
+	.buttonPanel{
+		max-width: 100%;
+	}
+}
+.dicediv{
+	background-color:#5d5d5d;
+	width:60px;
+	height: 60px;
+	color:white;
+	border-radius:5px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/*cursor: pointer;*/
+	
+}
+.diceButton{
+	cursor:pointer;
+	background-color:#5d5d5d;
+	width:120px;
+	height: 40px;
+	color:white;
+	font-weight: bold;
+	font-size:18px;
+}
+.diceButton:hover{
+	opacity: 0.5;
+}
+
+#midScreen{
+	display:block;
+}
+#startScreen,#endScreen{
+	display: none;
+}
+.screenContents{
+	color:white;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	/*min-height:400px;*/
+	height: 100vh;	
+	justify-content: space-around; 
+}
+.flexRow{
+	display:flex;
+	max-width:80%;
+	justify-content: center;	
+	margin-bottom: 30px;
+}
+.midScreenDivs{
+	display:flex;
+	flex-direction: column;
+	justify-content: space-around;
+	width:100%;
+}
+
+
+
+.labelx{
+	color:white;
+	margin-right:10px;
+}
+.darkInput{
+	background-color: #4d4d4d;
+	color:white;
+	border:none;
+	border-bottom:1px solid white;
+	outline:none;
+}
+
+#playerCardContainer{
+	width:90%;
+	margin: auto;
+	margin-top:20px;
+	display:flex;
+	flex-wrap: wrap;
+	justify-content: space-around;	
+}
+.playerCard{
+	width:300px;
+	height:400px;
+	display:flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	border:1px solid #a3a375;
+}
+.avatarSpace{
+	height: 200px;
+	margin-bottom: 10px;
+}

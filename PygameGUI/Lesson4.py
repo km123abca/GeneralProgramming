@@ -15,6 +15,7 @@ manager = pygame_gui.UIManager((800, 600))
 hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
                                          text='Say Hello',
                                          manager=manager)
+text_input = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect(350,75, 100, 100), manager=manager)
 
 clock = pygame.time.Clock()
 is_running = True
@@ -29,6 +30,9 @@ while is_running:
          if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
              if event.ui_element == hello_button:
                  print('Hello World!')
+         if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+         	 if event.ui_element == text_input:
+         	 	 print(text_input.text)
 
      manager.process_events(event)
 

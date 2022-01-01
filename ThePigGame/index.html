@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>The Pig Game</title>
+
+	<link rel="stylesheet" href="styles.css"/>
+	
+</head>
+<body>
+	<div id="endScreen">
+	<div class="buttonPanel">
+		<div class="dicediv" id="dice0">1</div>
+		<div class="dicediv" id="dice1">2</div>
+		<div class="dicediv" id="dice2">3</div>
+		<div class="dicediv" id="dice3">4</div>
+		<div class="dicediv" id="dice4">5</div>
+		<div class="dicediv" id="dice5">6</div>
+		<button class="diceButton" onClick="runAnimation()">Click Here</button>
+	</div>
+	<div id="playerCardContainer">
+		<div class="playerCard">
+			<div class="avatarSpace">
+				<div class="labelx">Jack Dorsey</div>
+			</div>
+			<div class="flexRow">
+				<div class="labelx">Turn Score:</div>
+				<div class="labelx">2</div>
+			</div>
+			<div class="flexRow">
+				<div class="labelx">Total Score:</div>
+				<div class="labelx">20</div>
+			</div>
+			<div class="flexRow">
+				<button class="diceButton">Throw</button>
+				<button class="diceButton">Quit</button>
+			</div>
+		</div>
+
+		<div class="playerCard">
+			<div class="avatarSpace">
+				<div class="labelx">John Morrison</div>
+			</div>
+			<div class="flexRow">
+				<div class="labelx">Turn Score:</div>
+				<div class="labelx">2</div>
+			</div>
+			<div class="flexRow">
+				<div class="labelx">Total Score:</div>
+				<div class="labelx">20</div>
+			</div>
+			<div class="flexRow">
+				<button class="diceButton">Throw</button>
+				<button class="diceButton">Quit</button>
+			</div>
+		</div>
+	</div>
+	</div>
+
+	<div id="startScreen">
+		<div class="screenContents">
+			<h1>General Instructions</h1>
+			<h2>Each Player has to roll the dice</h2>
+			<h2>Points get accumulated as per the number that turns up</h2>
+			<h2>Points get accumulated as per the number that turns up</h2>
+			<button class="diceButton">Next</button>
+		</div>
+	</div>
+
+	<div id="midScreen">
+		<div class="screenContents">
+
+			<div id="topBlock" class="midScreenDivs">
+				<div class="flexRow">
+					<div class="labelx">Number of Players:</div>
+					<input type="text" class="darkInput" onchange="addPlayerInputs(this.value)"/>
+				</div>
+			</div>
+
+			<div id="middleBlock" class="midScreenDivs">				
+			</div>
+
+			<div id="bottomBlock" class="midScreenDivs">
+				<div class="flexRow">
+				<button class="diceButton">Start Game</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	
+
+	<script src="control.js"></script>
+</body>
+</html>
