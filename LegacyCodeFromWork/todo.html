@@ -1,0 +1,546 @@
+<html>
+<head>
+  <script> 
+    function myfn(){
+     document.getElementById("myDropdown").classList.toggle("show");
+    }
+    window.onclick=(event)=>
+                    {
+                      if(!event.target.matches('.dropbtn'))
+                        {
+                         var dropdowns=document.getElementsByClassName("dropdown-content");
+                         var i;
+                         for(i=0;i< dropdowns.length;i++)
+                           {
+                            var openDropdown=dropdowns[i];
+                            if(openDropdown.classList.contains('show'))
+                              {
+                                openDropdown.classList.remove('show');
+                              }
+                           }
+                        }
+                    }
+  </script>
+	
+  <style>
+        body{
+             background-image:linear-gradient(to right,#6dc76e,yellow);
+            }
+	.navbar
+            {
+	      width:100%;
+	      height:50px;
+              background-color:black;
+              display:flex;
+              flex-direction:row-reverse;
+            }
+
+       
+         .frmgrp
+            {
+             margin-bottom:10px;
+            }
+         .frm
+           {
+             border:2px solid black;
+             max-width:50%;
+             margin:auto;
+             padding:auto;
+             border-radius:5px;
+             margin-top:100px;
+             background-color:#d3d3c7;
+             box-shadow: 5px 5px  #888888;
+
+           }
+         .labelx
+           {
+             /*border:1px solid black;
+             width:300px;  */
+               
+                     
+           }
+         .inputx
+           {
+             
+            /* border:3px solid red; 
+             width:300px;*/
+           }
+         .actform
+           {
+            margin:auto;
+            max-width:50%;
+            padding:20px;
+            
+           }
+         .frmgrp
+           {
+            display:flex;
+            justify-content:center;
+            /*border:1px solid black;*/
+           }
+         .btn
+           {
+            cursor:pointer;
+            border-radius:20%;
+            background-color:#b8c737;
+            color:white;
+            font-size:16px;
+            padding:5px;
+            display:inline-block;
+           }
+          .btn:hover
+           {
+            opacity:0.5;	
+           }
+         
+  /* dropdown */
+   .dropbtn{
+     background-color:black;
+     font-weight:bold;
+     color:white;
+     padding:16px;
+     font-size:16px;
+     border:none;
+     cursor:pointer;
+    }
+   .dropbtn:hover,.dropbtn:focus{
+     background-color:#2980B9;
+    }
+   .dropdown{
+    position:relative;
+    display:inline-block;
+    }
+    .dropdown-content{
+    display:none;
+    position:absolute;
+    background-color:#f1f1f1;
+    min-width:100%;
+    box-shadow: 0px 8px 16px 0px rgba(16,220,141,0.2);
+    z-index:1;
+    }
+    .dropdown-content a{
+    color:black;
+    padding:12px 16px;
+    text-decoration:none;
+    display:block;
+    }
+    .dropdown-content a:hover{
+    background-color:#ddd;
+    }
+    .show{
+    display:block;
+    }
+
+
+
+    .holder
+      {
+        border:2px solid black;
+        border-radius:10px;
+        margin:auto;
+        max-width:50%;
+        margin-top:20px;
+        background-image:linear-gradient(to right,#21d000,#1f9c05);
+      }
+    .inp-holder
+      {
+        display:flex;
+        max-width:80%;
+        margin:auto;
+        margin-bottom:30px;
+      }
+      #tsk
+     {
+      flex-grow:100;
+     }
+
+
+    .taskarea
+      {        
+        max-width:80%;
+        margin:auto;       
+      }
+    .task-holder
+      {
+        display:flex;
+        background-image:linear-gradient(to right,#96dacf,#e6d6e5);
+        margin-bottom:5px;
+      }
+    .taskcnt
+      {
+       flex-grow:100;
+       text-align:center;
+      }
+    .tsb
+      {
+       border:none;
+       cursor:pointer;
+       color:white;
+       background-color:black;
+       border-radius:10%;
+       margin-left:3px;
+       font-weight:bold;
+      }
+    #todomaster
+      {
+       display:none;
+      }
+    
+  </style>
+
+  <script>
+     
+     var editing=false;
+     var editIndex=0;
+     var lastElem=3;
+
+     var loadedd=()=>{
+                console.log("doc loaded");
+
+                var user=localStorage.getItem('user',username);
+
+	        if(user && user!="")
+                {
+		document.querySelector("#login").style.display="none";
+                document.querySelector("#todomaster").style.display="block";
+                }
+                
+                      
+
+
+
+
+                     var ls=localStorage.getItem("conts");
+                     if(ls)
+           		{
+                         var conts=JSON.parse(ls);
+                         var greta=-99999;
+                         var empstr="";
+                         for(var elem of conts)
+                           { 
+                              lastElem+=1;
+         		      var contentt=elem.value;
+                              var num=elem.num;
+                              var su="Strike";
+                              if(elem.strike) 
+                                    {
+                                    contentt="<strike>"+contentt+"</strike>";
+                                    su="UnStrike";
+                                    }
+                              if(num>greta) greta=num;
+                              
+                              empstr+= `<div class='task-holder' id='holder${num}'>`;
+                              empstr+= `<div class='taskcnt' id='content${num}'> ${contentt}</div>`;
+                              empstr+=`<button type='button' class='tsb' onclick='setupEdit(${num})'>Edit</button>`;
+                              empstr+=`<button type='button' class='tsb' onclick='delthis(${num})'>Delete</button>`;
+                              empstr+=`<button type='button' class='tsb' onclick='strikeunstrike(this,${num})'>${su}</button>`;
+                              empstr+=`</div>`;
+                           }
+                          if(greta!=-99999)
+                          lastElem=greta;
+                          document.getElementById("taskarea").innerHTML+=empstr;
+                        } 
+              
+                     };
+     window.addEventListener('load', loadedd);
+
+
+     function setCookie(cname,cvalue,exmins)
+        {
+  	  var d=new Date();
+          d.setTime(d.getTime()+(exmins*60*1000));
+          var expires="expires="+d.toUTCString();
+          document.cookie=cname+"="+cvalue+";"+expires+";path=/";
+        }
+     function getCookie(cname)
+        {
+          var name=cname+"=";
+          var decodedCookie=decodeURIComponent(document.cookie);
+          var ca=decodedCookie.split(';');
+          for(var i=0;i<ca.length;i++)
+           {
+            var c=ca[i];
+            while(c.charAt(0)==' ')
+             {
+              c=c.substring(1);
+             }
+            if(c.indexOf(name)==0)
+             {
+              return c.substring(name.length,c.length);
+             }
+           }
+          return "";
+        }
+     function actnow(e)
+        {
+         e.preventDefault();
+         var username=document.querySelector("#username").value;
+         var password=document.querySelector("#password").value;
+         if(username=="" || password=="")
+               alert("username and password cant be empty");
+
+         if(username=="km" && password=="km")
+              {
+                console.log("done");
+                document.querySelector("#login").style.display="none";
+                document.querySelector("#todomaster").style.display="block";
+                localStorage.setItem('user',username);
+              }
+         
+        }
+     function logout()
+        { 
+          document.querySelector("#login").style.display="block";
+          document.querySelector("#todomaster").style.display="none";
+          localStorage.setItem('user','');
+        }
+     function createElem()
+       {
+         lastElem+=1;
+         var contentt=document.querySelector("#tsk").value;
+         if(contentt=="")
+            {
+              alert("you havent entered anything");
+              lastElem-=1;
+              return false;
+            }
+         var empstr="";
+         empstr+= `<div class='task-holder' id='holder${lastElem}'>`;
+         empstr+= `<div class='taskcnt' id='content${lastElem}'> ${contentt}</div>`;
+         empstr+=`<button type='button' class='tsb' onclick='setupEdit(${lastElem})'>Edit</button>`;
+         empstr+=`<button type='button' class='tsb' onclick='delthis(${lastElem})'>Delete</button>`;
+         empstr+=`<button type='button' class='tsb' onclick='strikeunstrike(this,${lastElem})'>Strike</button>`;
+         empstr+=`</div>`;  
+         //console.log(empstr);
+         document.getElementById("taskarea").innerHTML+=empstr;  
+         
+         var ls=localStorage.getItem("conts");
+         if(ls)
+           {
+            var conts=JSON.parse(ls);
+            conts.push({"value":contentt,"num":lastElem,"strike":false});
+            conts=JSON.stringify(conts);
+            localStorage.setItem("conts",conts);
+           } 
+         else
+           {
+              localStorage.setItem("conts","["+JSON.stringify({"value":contentt,"num":lastElem,"strike":false})+"]");
+           }  
+         
+       }
+     function strikeunstrike(elem,num)
+       { 
+         var contt=document.getElementById("content"+num).innerHTML;
+         
+         if(elem.innerHTML=="Strike")
+          {
+           contt="<strike>"+contt+"</strike>";
+           elem.innerHTML="Unstrike";
+          }
+         else
+           {
+            contt=contt.replace("<strike>","");
+            contt=contt.replace("</strike>","");
+            elem.innerHTML="Strike";
+           }
+
+
+	 var ls=localStorage.getItem("conts");
+         if(ls)
+           {
+            var conts=JSON.parse(ls);
+            for (var i in conts)
+                {
+                  //console.log(`editindex:${editIndex} and num:${conts[i].num}`);
+                  if(conts[i].num==num)
+                    {
+                      if(elem.innerHTML=="Strike")
+                      	conts[i].strike=false;
+                      else
+                        conts[i].strike=true;
+                      break;
+                    }
+                }            
+            conts=JSON.stringify(conts);
+            localStorage.setItem("conts",conts);
+           }
+
+
+        document.getElementById("content"+num).innerHTML=contt;
+       }
+
+    function delthis(num)
+      {
+        document.getElementById("holder"+num).remove();
+
+        var ls=localStorage.getItem("conts");
+         if(ls)
+           {
+            var conts=JSON.parse(ls);
+            var j=-1;
+            for (var i in conts)
+                {
+                  if(conts[i].num==num)
+                    {
+                      j=i;
+                      break;
+                    }
+                }   
+            conts.splice(j,1);         
+            conts=JSON.stringify(conts);
+            localStorage.setItem("conts",conts);
+           }
+
+      }
+    function setupEdit(num)
+      {
+       if(document.querySelector("#content"+num).innerHTML.indexOf("<strike>")!=-1) 
+                 {
+                  alert("You cant edit a striken off entry");
+                  return false;
+                 }
+       editing=true;
+       editIndex=num;
+       document.querySelector("#tsk").value=document.querySelector("#content"+num).innerHTML;
+      }
+    function finishEdit()
+      {
+       if(editing)
+         {         
+          
+          
+          document.querySelector("#content"+editIndex).innerHTML=document.querySelector("#tsk").value;
+          document.querySelector("#tsk").value="";
+          editing=false;
+
+         var ls=localStorage.getItem("conts");
+         if(ls)
+           {
+            var conts=JSON.parse(ls);
+            for (var i in conts)
+                {
+                  if(conts[i].num==editIndex)
+                    {
+                      conts[i].value=document.querySelector("#content"+editIndex).innerHTML;
+                      break;
+                    }
+                }            
+            conts=JSON.stringify(conts);
+            localStorage.setItem("conts",conts);
+           }  
+
+         }
+       else
+         {
+           createElem();
+            document.querySelector("#tsk").value="";
+         }
+      document.querySelector("#tsk").focus();
+      }
+
+  
+  </script>
+</head>
+
+<body>
+
+<div class='navbar'>
+
+  <div class="dropdown">
+    <button onclick="myfn()" class="dropbtn">More Options</button>
+    <div id="myDropdown" class="dropdown-content">
+        <a href="#">Register</a>
+        <a href="#">Contact Us</a>
+        <a href="#">DeRegister</a>
+        <a href="javascript:logout()">Logout</a>
+    </div>
+  </div>
+
+</div>
+
+
+<div id="login">
+<div class='frm'>
+ <form class='actform' method="GET" action="" onsubmit="return actnow(event)" id="actform">
+
+    <div class="frmgrp">
+      
+      <label for="username" class="labelx">Username:</label>      
+      <div class="inputx">
+       <input id="username" name="username" type="text" /> 
+      </div>
+    </div>
+    
+    <div class="frmgrp">
+      
+      <label for="password" class="labelx">Password:</label>      
+      <div class="inputx">
+       <input id="password" name="password" type="password"  /> 
+      </div>
+    </div>
+     
+   <div class="frmgrp">
+   <input type="submit" value="submit" class="btn"/>    
+   </div>
+
+ </form>
+ 
+</div>
+</div>
+
+
+
+
+<div id="todomaster">
+<div class="holder">
+   <div class="inp-holder">
+      <input type="text" id="tsk" class="tsk" >
+      <button type="button" class="tsb" onclick="finishEdit()">Log</botton>
+   </div>
+  
+   <div class="taskarea" id="taskarea">
+       <!--
+       <div class="task-holder" id="holder1">
+        <div class="taskcnt" id="content1"> do some</div>
+        <button type="button" class="tsb" onclick="setupEdit(1)">Edit</button>
+        <button type="button" class="tsb" onclick="delthis(1)">Delete</button>
+        <button type="button" class="tsb" onclick="strikeunstrike(this,1)">Strike</button>
+       </div>
+
+      <div class="task-holder" id="holder2">
+        <div class="taskcnt" id="content2"> do some</div>
+        <button type="button" class="tsb" onclick="setupEdit(2)">Edit</button>
+        <button type="button" class="tsb" onclick="delthis(2)">Delete</button>
+        <button type="button" class="tsb" onclick="strikeunstrike(this,2)">Strike</button>
+       </div>
+
+       <div class='task-holder' id='holder3'>
+        <div class='taskcnt' id='content3'> dfd</div>
+        <button type='button' class='tsb' onclick='setupEdit(3)'>Edit</button>
+        <button type='button' class='tsb' onclick='delthis(3)'>Delete</button>
+        <button type='button' class='tsb' onclick='strikeunstrike(this,3)'>Strike</button>
+       </div>
+       -->
+
+   </div>
+</div>
+</div>
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

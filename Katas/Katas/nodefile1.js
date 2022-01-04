@@ -15,6 +15,167 @@ var removeChar=(line,charx)=>{
 	return line;
 }
 
+/*
+
+function decomposeo(n)
+	{
+		res=sosquares(n*n);
+		// res=sosquares2(n**2,n-1);
+		if(res=="nothing") return "nothing";
+		res=res.filter(x=>x.length!=1);
+		if(res.length==0) return "nothing";
+		offset=1;
+		while(res.length > 1)
+			{
+				largest=res.reduce((lgst,x)=>x[x.length-offset]>lgst?x[x.length-offset]:lgst,-1);
+				res=res.filter(x=>x[x.length-offset]==largest);
+				offset+=1;
+				if(offset>10) break;
+			}
+		return res;
+	}
+
+function decompose(n)
+	{
+		// res=sosquares(n*n);
+		res=sosquares2(n**2,n-1);
+		// console.log(JSON.stringify(res));
+		if(res=="nothing") return "nothing";
+		res=res.filter(x=>x.length!=1);
+		if(res.length==0) return "nothing";
+		offset=0;
+		while(res.length > 1)
+			{
+				largest=res.reduce((lgst,x)=>x[offset]>lgst?x[offset]:lgst,-1);
+				res=res.filter(x=>x[offset]==largest);
+				offset+=1;
+				if(offset>10) break;
+			}
+		return res;
+	}
+let prevResults={};
+function decompose_new(n)
+	{
+        res=sosquares3(n*n,n-1);
+        if(res!="nothing")
+        	prevResults[n]=res;
+		return res;
+	}
+function sosquares3(n,m)
+	{
+		msq=m*m;
+		let sumT=0;
+		let brkFlg=true;
+		for(let i=m;i>=1;i--)
+			{
+			sumT+=i*i;
+			if(sumT >= n)
+				{
+				brkFlg=false; 
+				break;
+				}
+			}
+		if(brkFlg) 
+			{
+			// console.log(`received ${n},${m} returning nothing since tgt unacheivable`);
+			return "nothing";		
+			}
+		if(msq==n) 
+			{
+			// console.log(`received ${n},${m} returning ${[m]}`);
+			// console.log("hiya");
+			return [m];
+			}		
+		let leftSequences="nothing";
+		if(msq < n) 
+			{			
+			leftSequences=sosquares3(n-msq,m-1);	
+			if(leftSequences!="nothing")
+				{
+				leftSequences.push(m);
+				return leftSequences;				
+				
+				// return [m,...leftSequences];
+				}		
+			}
+		// console.log("right with "+n+" "+(m-1));
+
+		return sosquares3(n,m-1);		
+	}
+
+function sosquares2(n,m)
+	{
+		msq=m*m;
+		let sumT=0;
+		let brkFlg=true;
+		for(let i=m;i>=1;i--)
+		{
+		sumT+=i*i;
+		if(sumT >= n)
+			{
+			brkFlg=false; 
+			break;
+			}
+		}
+		if(brkFlg) 
+			{
+			// console.log(`received ${n},${m} returning nothing since tgt unacheivable`);
+			return "nothing";		
+			}
+		if(msq==n) 
+			{
+			// console.log(`received ${n},${m} returning [[${m}]]`);
+			return [[m]];
+			}
+		let leftSequences="nothing";
+		if(msq < n) 
+		{			
+			leftSequences=sosquares2(n-msq,m-1);
+		}
+		
+		let rightSequences=sosquares2(n,m-1);
+
+		result=[];
+		if(leftSequences!="nothing") result.push(...leftSequences.map(val=>[m,...val]));
+		else if(rightSequences!="nothing") result.push(...rightSequences);
+		if(result.length==0)
+			{ 
+			// console.log(`received ${n},${m} returning nothing on both sides`);
+			return "nothing";
+			}
+		// console.log(`received ${n},${m} returning ${JSON.stringify(result)}`);
+		return result;
+	}
+function sosquares(n,ind=0,stackvar=0)
+	{
+		if(stackvar > 1000) 
+		{
+			alert('dangerous depth');
+			console.log('dangerous depth');
+			return "nothing";
+		}
+		if(n==0 ) return [[]];
+
+		if (n<0 || n<=ind) return "nothing";
+		let x=ind+1;
+		while(Math.sqrt(x)!=Math.floor(Math.sqrt(x)) ) 
+		{
+			x+=1;
+			if(x > n) return "nothing";
+		}		
+		let leftSequences=sosquares(n-x,x,stackvar+1);
+		let rightSequences=sosquares(n,x,stackvar+1);
+
+		result=[];
+		if(leftSequences!="nothing") result.push(...leftSequences.map(val=>[Math.sqrt(x),...val]));
+		if(rightSequences!="nothing") result.push(...rightSequences);
+		if(result.length==0) return "nothing";
+		return result;
+	}
+
+	*/
+//29200 attempts in total 
+
 var justify = function(str, len) {
   let lines=[];
   let t=0;
@@ -294,6 +455,174 @@ IterativeRotationCipher={
 		return strr;
 	}
 }
+const InterlacedSpiralCipher = {};
+InterlacedSpiralCipher.encode=(strxx)=>{
+let n= Math.ceil(Math.sqrt(strxx.length));
+// let sq_dim=n;
+strxx+=Array(n*n-strxx.length).fill(' ').join('');
+let sq=[],a=0,b=n-1,j=0;
+for(let i=0;i<n;i++) sq.push(Array(n).fill(''));
+n-=1;
+while(n >= 1){
+	for(let i=0;i < n;i++){
+		sq[a][a+i]=strxx[j++];
+		sq[a+i][b]=strxx[j++];
+		sq[b][b-i]=strxx[j++];
+		sq[b-i][a]=strxx[j++];
+	}
+	n-=2;
+	a+=1;
+	b-=1;
+}
+if(n==0)
+	sq[a][a]=strxx[j++];
+return sq.map(x=> x.join('')).join('');
+}
+
+InterlacedSpiralCipher.decode=(strxx)=>{
+let n= Math.ceil(Math.sqrt(strxx.length));
+// let sq_dim=n;
+strxx+=Array(n*n-strxx.length).fill(' ').join('');
+let sq=[],a=0,b=n-1,j=0;
+for(let i=0;i<n;i++) sq.push(Array(n).fill(''));
+for (let i=0;i<n;i++)
+	for(let k=0;k<n;k++)
+		sq[i][k]=strxx[j++];
+n-=1;
+let res='';
+while(n >= 1){
+	for(let i=0;i < n;i++){
+		res+=sq[a][a+i];
+		res+=sq[a+i][b];
+		res+=sq[b][b-i];
+		res+=sq[b-i][a];
+	}
+	n-=2;
+	a+=1;
+	b-=1;
+}
+if(n==0)
+	res+=sq[a][a];
+return res.trim();
+
+}
+
+const InterlacedSpiralCipher2 = {};
+
+InterlacedSpiralCipher2.encode = function(str){
+  var s=Math.ceil(str.length**0.5), m=[...Array(s)].map(_=>Array(s).fill(' ')), a=[...str+' '.repeat(s*s-str.length)].reverse();
+  for(let q=0; q*2+1<s; q++) for(let i=0; i<s-1-q*2; i++) {m[q][q+i]=a.pop();m[q+i][s-1-q]=a.pop(); m[s-1-q][s-1-q-i]=a.pop(); m[s-1-q-i][q]=a.pop();}
+  if(s%2===1) m[(s-1)/2][(s-1)/2]=a.pop();
+  return m.map(r=>r.join('')).join('');
+};
+
+InterlacedSpiralCipher2.decode = function(str){
+  var s=Math.ceil(str.length**0.5), m=str.match(new RegExp(`.{${s}}`,'g')).map(r=>[...r]), r=[];
+  for(let q=0; q*2+1<s; q++) for(let i=0; i<s-1-q*2; i++) r.push(m[q][q+i],m[q+i][s-1-q],m[s-1-q][s-1-q-i],m[s-1-q-i][q]);
+  if(s%2===1) r.push(m[(s-1)/2][(s-1)/2]);
+  return r.join('').trim();
+};
+
+function encipher(s,key){
+	s=s.toUpperCase();
+	key=key.replace(/[\s]+/g,'').toUpperCase();
+	let keyMat,replacingElem;
+	[replacingElem,keyMat]=populateKeyMatrix(key);
+	if(replacingElem=="I")
+		s=s.replace(/[J]/g,"I");
+	else
+		s=s.replace(/[I]/g,"J");
+	let s_copy=s;
+	s=s.replace(/[\s]+/g,'');
+	s_arr=s.split('');
+	s=s_arr.reduce((su,x,i)=>
+						{
+							if(i!=(s.length-1) &&  x==s_arr[i+1])
+								return su+x+'X';
+							else if(s.length%2==1 && i==s.length-1)
+								return su+x+'X';
+							else 
+								return su+x;
+						}
+		   ,'');
+	let result='',i1,j1,i2,j2;
+	// return `string:${s} and keymatrix:${JSON.stringify(keyMat)}`
+	for(let i=0;i < s.length;i+=2){			
+		[i1,j1]=GetPositionInKeyMatrix(s[i],keyMat);
+		[i2,j2]=GetPositionInKeyMatrix(s[i+1],keyMat);
+		result+=FindReplacement(i1,j1,i2,j2,keyMat);
+	}
+	return IntroduceSpaces(result,s_copy);
+}
+function IntroduceSpaces(orig,key){
+	let k=0;
+	let nonSpaceLength=key.replace(/[\s]+/g,'').length;
+	return key.split('').reduce((result,x)=> x==' '? result+' ':result+orig[k++],'')+' '+orig.substr(nonSpaceLength,orig.length-nonSpaceLength);	
+}
+function GetPositionInKeyMatrix(a,keyMat){
+	let i1,j1;
+	for(let i=0;i < 5;i++)
+	for(let j=0;j < 5;j++)
+		if(keyMat[i][j]==a)
+			return [i,j];
+	console.log('returning negative for '+a);
+	return [-1,-1];
+}
+function FindReplacement(i1,j1,i2,j2,keyMat){
+	if(i1==i2){
+		j1=(j1+1) > 4?0:j1+1;
+		j2=(j2+1) > 4?0:j2+1;
+		return keyMat[i1][j1]+keyMat[i2][j2];
+	}
+	else if(j1==j2){
+		i1=(i1+1) > 4?0:i1+1;
+		i2=(i2+1) > 4?0:i2+1;
+		return keyMat[i1][j1]+keyMat[i2][j2];
+	}
+	return keyMat[i1][j2]+keyMat[i2][j1];
+}
+
+function populateKeyMatrix(key){	
+
+	let keyMat=[];
+	let keyTrack=0;
+	let alphs="abcdefghijklmnopqrstuvwxyz";
+	alphs=alphs.toUpperCase();
+	key+=alphs;
+	let replacingElem;
+	
+	let charsCovered='';
+	for(let i=0;i<5;i++) keyMat.push(Array(5).fill(''));
+	for(let i=0;i < 5;i++)
+	for(let j=0;j < 5;j++)
+		{
+			while(keyTrack < key.length)
+			{
+			let c=key[keyTrack++];
+			if(c!='I' && c!='J') 
+				{
+				 if(charsCovered.indexOf(c)==-1)
+				 	{
+					keyMat[i][j]=c;
+					charsCovered+=c;
+					break;
+					}
+				}
+			else{
+				 if(charsCovered.indexOf('I')==-1 && charsCovered.indexOf('J')==-1)
+				 	{
+					keyMat[i][j]=c;
+					charsCovered+=c;
+					replacingElem=c;
+					break;
+					}
+				}
+			}
+			
+		} 
+	
+	return [replacingElem,keyMat];
+}
 
 
 handleReadText=(err,data)=>{
@@ -315,10 +644,20 @@ handleReadText=(err,data)=>{
 		strxx="36 ws h weA dgIaa ug owh n!asrit git \n msm phw teaI'e tanantwhe reos\ns ther! aHeae \'gwadin\nt haw n htoo ,I\'i sy aohOy";
 		n=10;
 		// data=JSON.stringify(IterativeRotationCipher.encode(n,strxx));
-		data=JSON.stringify(IterativeRotationCipher.decode(strxx));
-		
-		
-		
+		// data=JSON.stringify(IterativeRotationCipher.decode(strxx));
+
+		strxx="Romani_ite_domum";
+		strxx="Rntodomiimuea__m";
+		// data=JSON.stringify(InterlacedSpiralCipher.decode(strxx));
+		strxx="cozy lummox gives smart squid who asks for job pen";
+		key='playfairjexample';
+		data=JSON.stringify(encipher(strxx,key));
+		// data=JSON.stringify(populateKeyMatrix(key));		
+
+		// orig="thecatinthebage";
+		// key="xxx xxx xx";
+		// data=JSON.stringify(IntroduceSpaces(orig,key));	
+
 		fs.writeFile("./datum.json",data,errHandler);
 		}
 }
@@ -326,166 +665,7 @@ readFromFile=()=>{
 	fs.readFile('input.txt','utf8',handleReadText);
 }
 readFromFile();
-/*
 
-function decomposeo(n)
-	{
-		res=sosquares(n*n);
-		// res=sosquares2(n**2,n-1);
-		if(res=="nothing") return "nothing";
-		res=res.filter(x=>x.length!=1);
-		if(res.length==0) return "nothing";
-		offset=1;
-		while(res.length > 1)
-			{
-				largest=res.reduce((lgst,x)=>x[x.length-offset]>lgst?x[x.length-offset]:lgst,-1);
-				res=res.filter(x=>x[x.length-offset]==largest);
-				offset+=1;
-				if(offset>10) break;
-			}
-		return res;
-	}
-
-function decompose(n)
-	{
-		// res=sosquares(n*n);
-		res=sosquares2(n**2,n-1);
-		// console.log(JSON.stringify(res));
-		if(res=="nothing") return "nothing";
-		res=res.filter(x=>x.length!=1);
-		if(res.length==0) return "nothing";
-		offset=0;
-		while(res.length > 1)
-			{
-				largest=res.reduce((lgst,x)=>x[offset]>lgst?x[offset]:lgst,-1);
-				res=res.filter(x=>x[offset]==largest);
-				offset+=1;
-				if(offset>10) break;
-			}
-		return res;
-	}
-let prevResults={};
-function decompose_new(n)
-	{
-        res=sosquares3(n*n,n-1);
-        if(res!="nothing")
-        	prevResults[n]=res;
-		return res;
-	}
-function sosquares3(n,m)
-	{
-		msq=m*m;
-		let sumT=0;
-		let brkFlg=true;
-		for(let i=m;i>=1;i--)
-			{
-			sumT+=i*i;
-			if(sumT >= n)
-				{
-				brkFlg=false; 
-				break;
-				}
-			}
-		if(brkFlg) 
-			{
-			// console.log(`received ${n},${m} returning nothing since tgt unacheivable`);
-			return "nothing";		
-			}
-		if(msq==n) 
-			{
-			// console.log(`received ${n},${m} returning ${[m]}`);
-			// console.log("hiya");
-			return [m];
-			}		
-		let leftSequences="nothing";
-		if(msq < n) 
-			{			
-			leftSequences=sosquares3(n-msq,m-1);	
-			if(leftSequences!="nothing")
-				{
-				leftSequences.push(m);
-				return leftSequences;				
-				
-				// return [m,...leftSequences];
-				}		
-			}
-		// console.log("right with "+n+" "+(m-1));
-
-		return sosquares3(n,m-1);		
-	}
-
-function sosquares2(n,m)
-	{
-		msq=m*m;
-		let sumT=0;
-		let brkFlg=true;
-		for(let i=m;i>=1;i--)
-		{
-		sumT+=i*i;
-		if(sumT >= n)
-			{
-			brkFlg=false; 
-			break;
-			}
-		}
-		if(brkFlg) 
-			{
-			// console.log(`received ${n},${m} returning nothing since tgt unacheivable`);
-			return "nothing";		
-			}
-		if(msq==n) 
-			{
-			// console.log(`received ${n},${m} returning [[${m}]]`);
-			return [[m]];
-			}
-		let leftSequences="nothing";
-		if(msq < n) 
-		{			
-			leftSequences=sosquares2(n-msq,m-1);
-		}
-		
-		let rightSequences=sosquares2(n,m-1);
-
-		result=[];
-		if(leftSequences!="nothing") result.push(...leftSequences.map(val=>[m,...val]));
-		else if(rightSequences!="nothing") result.push(...rightSequences);
-		if(result.length==0)
-			{ 
-			// console.log(`received ${n},${m} returning nothing on both sides`);
-			return "nothing";
-			}
-		// console.log(`received ${n},${m} returning ${JSON.stringify(result)}`);
-		return result;
-	}
-function sosquares(n,ind=0,stackvar=0)
-	{
-		if(stackvar > 1000) 
-		{
-			alert('dangerous depth');
-			console.log('dangerous depth');
-			return "nothing";
-		}
-		if(n==0 ) return [[]];
-
-		if (n<0 || n<=ind) return "nothing";
-		let x=ind+1;
-		while(Math.sqrt(x)!=Math.floor(Math.sqrt(x)) ) 
-		{
-			x+=1;
-			if(x > n) return "nothing";
-		}		
-		let leftSequences=sosquares(n-x,x,stackvar+1);
-		let rightSequences=sosquares(n,x,stackvar+1);
-
-		result=[];
-		if(leftSequences!="nothing") result.push(...leftSequences.map(val=>[Math.sqrt(x),...val]));
-		if(rightSequences!="nothing") result.push(...rightSequences);
-		if(result.length==0) return "nothing";
-		return result;
-	}
-
-	*/
-//29200 attempts in total 
 	function livingRoom(prisonerNumber, lightbulb, previousVisits) {
   const assertion = false;
   let assertion2=assertion;

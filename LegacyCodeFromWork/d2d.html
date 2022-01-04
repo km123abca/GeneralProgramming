@@ -1,0 +1,474 @@
+<html>
+<head>
+  <script>
+     var countx=0,prevDate="none";
+     function destroyPeeps()
+           {
+            var elems=document.getElementsByClassName('pcontainer');
+            var rem_indices=[];
+            for(var i=0;i<elems.length;i++)
+              {
+               //rem_indices.push(i);
+                elems[0].remove();
+              }
+            /*
+            for(var k=0;k<rem_indices.length;k++)
+               {
+                 elems[rem_indices[k]].remove();
+                   for(var l=0;l<rem_indices.length;l++)
+                       rem_indices[l]-=1;
+               }
+           */
+           }
+     function submitMe() 
+          {
+            
+           //showModal("hello"); 
+           let strr="Following Fields have not been filled <br>";
+           let datein=document.querySelector("#datein").value;
+           let timein=document.querySelector("#timein").value;
+           let descin=document.querySelector("#descin").value;
+           
+           if(datein=="") strr+="Date ";
+           if(timein=="") strr+="Time ";
+           if(descin=="") strr+="Description ";
+           if(strr!="Following Fields have not been filled <br>")
+           showModal(strr);
+           else
+              {
+                var peoplex=[];
+                if(document.querySelector("#people").innerHTML.trim()!="")
+                 {
+                    var names=document.getElementsByClassName("phname");
+                    var phones=document.getElementsByClassName("phphone");
+                    console.log(names.length);
+                    for(var i=0;i<names.length;i++)
+                       {
+                         peoplex.push({"name":names[i].value,"phone":phones[i].value});                         
+                       }
+                 }
+                
+                showModal("Data will be stored");
+              
+                
+                var obj={"date":datein,"time":timein,"desc":descin,"people":peoplex};                
+                setData(obj);                
+              }           
+            
+          }
+      function deleteItem()
+          {
+             let datein=document.querySelector("#datein").value;
+             let timein=document.querySelector("#timein").value;
+             let descin=document.querySelector("#descin").value;
+              if(datein=="")  
+                              {showModal("no date was entered");
+                               return false;
+                              }
+              if(timein=="")  
+                              {showModal("no time was entered");
+                               return false;
+                              }
+              if(descin=="")  
+                              {showModal("no description was entered");
+                               return false;
+                              }
+             let fullData=getData();
+             let k=-1;
+             for(var i in fullData)
+                 {
+                   let obj=fullData[i];
+                   if(obj.date==datein && obj.time==timein && obj.desc==descin)
+                     {
+                      k=i;
+                      showModal("The activity, "+obj.desc+ " will be deleted");
+                      break;
+                     }
+                 }
+             if(k!=-1)
+             fullData.splice(k,1);
+             localStorage.setItem("acts",JSON.stringify(fullData));
+             //document.querySelector("#datein").value="";
+             document.querySelector("#timein").value="";
+             document.querySelector("#descin").value="";
+             destroyPeeps();
+             countx=0,prevDate="none";
+             //searchItemWithDate();
+             
+          }
+      function searchItemWithDate()
+          {
+              destroyPeeps();
+              let datein=document.querySelector("#datein").value;
+              if(datein=="")  
+                              {showModal("no date was entered");
+                               return false;
+                              }
+              if(datein!=prevDate)
+                  {
+                    prevDate=datein;
+                    countx=0;
+                  }
+              else
+                  {
+                   countx+=1;
+                  }
+              
+              let fullData=getData();
+              selData=[];
+              for(var obj of fullData)
+                {
+                  if(obj.date==prevDate)
+                     selData.push(obj);
+                }
+              
+             
+             if(countx>=selData.length) countx=0;
+             if(selData.length==0)
+                   {
+                   showModal("There are no entries for this date");
+                   document.querySelector("#timein").value="";
+                   document.querySelector("#descin").value="";
+                   }
+             else
+                   {
+                   
+                   document.querySelector("#timein").value=selData[countx].time;
+                   document.querySelector("#descin").value=selData[countx].desc;
+                   for(var obj of selData[countx].people)
+                       {
+			addAperson(obj.name,obj.phone);
+                       }
+                   }
+              
+          }
+      function getData()
+          {
+            if(!localStorage.getItem("acts")) return [];
+            var contt=localStorage.getItem("acts");
+            contt=JSON.parse(contt); 
+            return contt; 
+          }
+      function setData(obj)
+          {
+            var acts=[]
+            if(localStorage.getItem("acts"))
+               {
+                 acts=localStorage.getItem("acts");
+                 acts=JSON.parse(acts);
+               }
+            let a=checkIfIn(acts,obj);
+            if(a==-1)
+            	acts.push(obj);
+            else
+                acts[a]=obj;
+            
+            localStorage.setItem("acts",JSON.stringify(acts));
+
+          }
+      function checkIfIn(arr,obj)
+          {
+            for(var i in arr)
+                {
+                  if ((arr[i].date==obj.date)&&(arr[i].time==obj.time))
+                     {
+                       return i;
+                     }
+                }
+            return -1;
+          }
+      function showModal(msg="hi")
+          {
+            x=document.getElementById("modal").style.display;
+            
+            if(!((x =="")||(x=="none")))
+                 return false;
+            
+            document.getElementById("modal").style.display="block";
+            document.getElementById("modal").innerHTML=msg;
+            
+            
+          }
+      document.onmousedown=function(e)
+					{
+                                        
+                                        if(document.getElementById("modal").style.display=="block")
+					document.getElementById("modal").style.display="none";
+					};
+      function loadTime()
+         {
+           document.querySelector("#datein").value=new Date().toLocaleDateString()
+         }
+
+     function addAperson(n="",p="")
+         {
+	   var elem=document.querySelector("#people");
+           var strr="<div class='pcontainer'>";
+               strr+="<div class='namecontainer'>";
+               strr+="<div class='plabel'>Name:</div>";              
+               strr+=`<input class='pinpname phname' type='text' value="${n}" />`;
+               strr+="</div>";
+               strr+="<div class='namecontainer'>";
+               strr+="<div class='plabel'>Phone:</div>";
+               strr+=`<input class='pinpname phphone' type='text' value="${p}" />`;
+               strr+="</div>";
+               strr+="<button type='button' class='greenbtn' onclick='deleteParent(this)'>Del</button>";
+               strr+="</div>";
+               elem.innerHTML+=strr; 
+         }
+    function deleteParent(elem)
+        {
+          //showModal(elem.parentNode.innerHTML);
+          
+          elem.parentNode.remove();
+        }
+  </script>
+	
+  <style>
+       
+	#modal
+            {
+               margin-left:30%;
+               width:30%;
+               height:100px;
+               border-radius:5%;
+               position:absolute;
+               z-index:1;
+               margin-top:1%;
+               display:none;
+               border:1px solid black;
+               padding: 10px;
+               text-align:center;
+               background-color:#4a4a3c;
+               color:white;
+               font-weight:bold;
+               opacity:0.8;
+
+            }
+        body
+            {
+              background-image:linear-gradient(to right,#e2effe,#e2ddeb);
+              font-family:Aharoni;
+            }
+        .bigbox
+            {
+              margin:auto;
+              background-image:linear-gradient(to right,#96ddeb,#c0ebcb);
+              max-width:60%;
+              border-radius:5%;
+              box-shadow: 8px 8px 16px 0px rgba(16,220,141,0.2);
+              padding:10px;
+            }
+        .lab-input
+            {
+              display:flex;
+              margin-bottom:15px;
+            }
+        .labelx,.inputx
+            {            
+              font-size:20px;           
+            }
+        .labelx
+            {
+              font-weight:bold;
+              width:25%;
+              margin-left:15%;
+              text-align:right;
+            }
+        .inputx
+            {
+              width:30%;
+              
+            }
+        .inp1
+            {
+              height:30;
+            }
+        .greenbtn
+            {
+              margin-left:10%;
+              
+              /*margin:auto;*/
+              border:none;
+              color:yellow;
+              background-color:#178069;
+              cursor:pointer;
+              width:80px;
+              height:30px;
+              box-shadow: 5px 5px  rgba(16,220,141,0.2);
+              font-weight:bold;
+            }
+         .greenbtn:hover
+            {
+              opacity:0.5;
+            }
+          .buttoncont
+            {
+             /*border:2px solid yellow; */
+            }
+
+           #div10{
+              width:100px;
+              height:100px;
+              background-color:red;
+              position:relative;
+              -webkit-animation-name: example;
+              -webkit-animation-duration: 4s;
+              -webkit-animation-delay:0s;
+              
+            }
+          @-webkit-keyframes example
+            {
+              0% {background-color:red;left:0px;top:0px;}
+              25% {background-color:yellow;left:200px;top:0px;}
+              50% {background-color:blue;left:200px;top:-200px;}
+              75% {background-color:green;left:0px;top:-200px;}
+             100% {background-color:red;left:0px;top:0px;}
+            }
+
+          #disapp{
+              width:100px;
+              height:100px;
+              background-color:red;
+              position:relative;
+              -webkit-animation-name: example2;
+              -webkit-animation-duration: 2s;
+              -webkit-animation-delay:0s;
+              
+            }
+          @-webkit-keyframes example2
+            {
+              0% {left:0px;}              
+             100% {left:700px;display:none;}
+            }
+
+
+         .people
+            {
+             /* border:3px solid yellow;
+              border-radius:4%;*/
+              min-height:20px;
+              margin-top:20px;
+            }
+
+         .pcontainer
+            {
+             display:flex;
+             max-width:80%;
+             margin:auto;
+             margin-bottom:10px;
+            }
+         .namecontainer
+            {
+             //max-width:50%;
+             display:flex;
+             margin:auto;
+            }
+          .plabel,.pinpname
+            { 
+              margin:auto;
+            }
+          .plabel
+            {
+              font-weight:bold;
+            }
+          .pinpname
+            {
+	      width:120px;
+            }
+
+
+                table{
+                      width:100%;
+                     }
+		table tr:nth-child(even) {
+					  background-color:#eee;
+			                 }
+
+		table tr:nth-child(odd)  {
+					  background-color:#fff;
+			     		 }
+
+			       table th	 {
+					  color:white;
+				          background-color:black;
+			                 }
+  </style>
+</head>
+
+<body>
+  <div id="dataentry">
+
+  <div id="modal">
+   Hi
+  </div>
+  <div class='bigbox'>
+      <div class="lab-input">
+         <span class="labelx">Date:</span>
+         <span class="inputx"><input type="date" id="datein" class="inp1" /></span>
+      </div>
+      <div class="lab-input">
+         <span class="labelx">Time:</span>
+         <span class="inputx"><input type="time" id="timein" class="inp1" /></span>
+         <button onclick="loadTime()" class="timeButton">set</button>
+      </div>
+      <div class="lab-input">
+         <span class="labelx">Description:</span><br>
+         <span class="inputx"><textarea  rows="10" cols="40" id="descin"  ></textarea></span>
+      </div>
+      
+      <div class="buttoncont">
+         <button type="button" class="greenbtn" onclick="submitMe()">Submit</button>
+         <button type="button" class="greenbtn" onclick="searchItemWithDate()">Search</button>
+         <button type="button" class="greenbtn" onclick="deleteItem()">Delete</button>
+         <button type="button" class="greenbtn" onclick="addAperson()">People</button>
+      </div>
+      <div class="people" id="people">
+      </div>
+  </div>
+
+  </div>
+
+  <div id="tabels">
+	<table id="win-table">
+              <thead>
+		  <tr>
+		     <th>Date</th>
+                     <th>time</th>
+                     <th>Description</th>
+                     <th>Important People</th>
+                  </tr>
+              </thead>
+
+	      <tbody id="dets">
+                     
+              </tbody>
+        </table>
+  </div>
+
+       <script>
+            let details=getData();
+            for(var val of details)
+		{
+		  let emptystr="";
+                  let peeps="";
+                  for (var p of val.people)
+ 			{
+                         peeps=p.name+":"+p.phone+"<br/>";
+                        }
+                  emptystr=`
+                            <tr>
+				<td>${new Date(val.date).toLocaleDateString("en-GB")}</td>
+                                <td>${val.time}</td>
+                                <td>${val.desc}</td>
+                                <td>${peeps}</td>
+                            </tr>
+		           `;
+                  document.querySelector("#dets").innerHTML+=emptystr;
+		}
+       </script>
+  
+
+</body>
+
+</html>
