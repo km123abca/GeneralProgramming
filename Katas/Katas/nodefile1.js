@@ -523,6 +523,8 @@ InterlacedSpiralCipher2.decode = function(str){
   return r.join('').trim();
 };
 
+
+
 function encipher(s,key){
 	s=s.toUpperCase();
 	key=key.replace(/[\s]+/g,'').toUpperCase();
@@ -535,18 +537,20 @@ function encipher(s,key){
 	let s_copy=s;
 	s=s.replace(/[\s]+/g,'');
 	s_arr=s.split('');
+  
 	s=s_arr.reduce((su,x,i)=>
 						{
 							if(i!=(s.length-1) &&  x==s_arr[i+1])
 								return su+x+'X';
-							else if(s.length%2==1 && i==s.length-1)
-								return su+x+'X';
+							//else if(s.length%2==1 && i==s.length-1)
+								//return su+x+'X';
 							else 
 								return su+x;
 						}
 		   ,'');
 	let result='',i1,j1,i2,j2;
 	// return `string:${s} and keymatrix:${JSON.stringify(keyMat)}`
+  if(s.length%2==1) s+='X';
 	for(let i=0;i < s.length;i+=2){			
 		[i1,j1]=GetPositionInKeyMatrix(s[i],keyMat);
 		[i2,j2]=GetPositionInKeyMatrix(s[i+1],keyMat);
@@ -557,7 +561,7 @@ function encipher(s,key){
 function IntroduceSpaces(orig,key){
 	let k=0;
 	let nonSpaceLength=key.replace(/[\s]+/g,'').length;
-	return key.split('').reduce((result,x)=> x==' '? result+' ':result+orig[k++],'')+' '+orig.substr(nonSpaceLength,orig.length-nonSpaceLength);	
+	return key.split('').reduce((result,x)=> x==' '? result+' ':result+orig[k++],'')+''+orig.substr(nonSpaceLength,orig.length-nonSpaceLength);	
 }
 function GetPositionInKeyMatrix(a,keyMat){
 	let i1,j1;
@@ -622,6 +626,22 @@ function populateKeyMatrix(key){
 		} 
 	
 	return [replacingElem,keyMat];
+}
+
+function trifidEncode(key, period, data){
+  //populate the key matrix
+  let BigMat=[];
+  for(let i=0;i < 3;i++) BigMat.push(Array(3).fill(0).reduce((arr,x)=> [...arr,Array(3).fill(1)],[]));
+  key.split('').map(
+  		(x,i)=>{  			
+  			BigMat[parseInt(i / 9)][parseInt((i % 9)/3)][(i % 9)%3]=x;
+  		}
+  	);
+  
+}
+
+function trifidDecode(key, period, data){
+  // Hajime again?
 }
 
 
