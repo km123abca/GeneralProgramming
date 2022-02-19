@@ -628,20 +628,560 @@ function populateKeyMatrix(key){
 	return [replacingElem,keyMat];
 }
 
+function printOut3DMatrix(mat){
+	let result="";
+	for(let n=0; n < mat.length;n++){
+		for(let i=0;i < mat[0].length;i++){
+			for(let j=0;j < mat[0][0].length;j++){
+				result+=mat[n][i][j]+' ';
+			}
+			result=result.replace(/[\s]$/,'');
+			result+='\n';
+		}
+		result+='\n';
+	}
+	return result;
+}
+
+function printOutMatrix(mat){
+	return mat.reduce((res,row)=>res+ row.reduce((res2,elem)=>res2+' '+elem,'')+'\n','');
+}
+
+function printOutArray(arr){
+	return arr.reduce((sum,x)=>sum.length%20==0?sum+x+'\n'+' ':sum+x+' ','').replace(/[\s]$/,'');
+}
+
 function trifidEncode(key, period, data){
   //populate the key matrix
-  let BigMat=[];
+  let BigMat=[],BigMat2=[];
+  data=data.replace(/[\s]/g,'');
   for(let i=0;i < 3;i++) BigMat.push(Array(3).fill(0).reduce((arr,x)=> [...arr,Array(3).fill(1)],[]));
   key.split('').map(
   		(x,i)=>{  			
   			BigMat[parseInt(i / 9)][parseInt((i % 9)/3)][(i % 9)%3]=x;
   		}
   	);
+
   
+  //populate the master matrix to put encoded triplets
+  let numMats=parseInt(data.length / period);
+  let residueMatCols=data.length % period;
+  // console.log(`numMats:${numMats},residue:${residueMatCols}`);
+  for(let i=0;i < numMats;i++) BigMat2.push(Array(3).fill(0).reduce((arr,x)=> [...arr,Array(period).fill(1)],[]));
+  BigMat2.push(Array(3).fill(0).reduce((arr,x)=> [...arr,Array(residueMatCols).fill(1)],[]));
+  // return printOut3DMatrix(BigMat2);
+  //populate BigMat2 with encoded triplets
+  let r_colind=0;
+  for(let i=0; i < data.length;i++){
+  	let a,b,c;
+  	let elemPositions=FindPositionInBigMat(BigMat,data[i]);
+  	for(let j in elemPositions)
+  	BigMat2[parseInt(r_colind/period)][j][r_colind % period]=elemPositions[j];
+    r_colind++;
+  }
+  
+  // return printOut3DMatrix(BigMat2);
+
+  let r_rowind=0;
+  let result_string='';
+  let maxElemsInBigMat=(BigMat2.length-1) * 3 * period + residueMatCols * 3;
+
+  //traverse across BigMat2 and extract encode characters from BigMat2 as per tripletes a,b,c
+  for(let i=0; i < maxElemsInBigMat; i+=3){
+  	let indices=[];
+  	for(let k=i; k < i+3;k++){
+  	let cols=parseInt(k / (3*period)) < (BigMat2.length -1)?period:residueMatCols;
+  	let matrixIndex=parseInt(k / (3*period));
+  	let rowIndex=parseInt((k % (3*period))/cols);
+  	let colIndex=(k % (3*period))%cols;  	
+  	indices.push(BigMat2[matrixIndex][rowIndex][colIndex]);  	
+  }    
+  	let [a,b,c]=indices.map(x=>x-1);  	
+  	result_string+=BigMat[a][b][c];
+  }
+  return result_string;
+}
+
+function FindPositionInBigMat(BigMat,ch){
+	for(let n=0;n < 3;n++)
+		for(let i=0; i < 3;i++)
+			for(let j=0;j < 3;j++){
+				if(BigMat[n][i][j]==ch) 
+					return [n+1,i+1,j+1];
+			}
+	return [-1,-1,-1];
 }
 
 function trifidDecode(key, period, data){
-  // Hajime again?
+  //populate the key matrix
+  let BigMat=[],BigMat2=[];
+  data=data.replace(/[\s]/g,'');
+  for(let i=0;i < 3;i++) BigMat.push(Array(3).fill(0).reduce((arr,x)=> [...arr,Array(3).fill(1)],[]));
+  key.split('').map(
+  		(x,i)=>{  			
+  			BigMat[parseInt(i / 9)][parseInt((i % 9)/3)][(i % 9)%3]=x;
+  		}
+  	);
+  //create BigMat2
+  let numMats=parseInt(data.length / period);
+  let residueMatCols=data.length % period;  
+  for(let i=0;i < numMats;i++) BigMat2.push(Array(3).fill(0).reduce((arr,x)=> [...arr,Array(period).fill(1)],[]));
+  BigMat2.push(Array(3).fill(0).reduce((arr,x)=> [...arr,Array(residueMatCols).fill(1)],[]));
+
+
+  //populate BigMat2
+  let maxElemsInBigMat=(BigMat2.length-1) * 3 * period + residueMatCols * 3;  
+  for(let i=0; i < maxElemsInBigMat; i+=3){
+  	let posTriplet=FindPositionInBigMat(BigMat,data[i/3]);
+  	let l=0;
+  	for(let k=i; k < i+3;k++){
+	  	let cols=parseInt(k / (3*period)) < (BigMat2.length -1)?period:residueMatCols;
+	  	let matrixIndex=parseInt(k / (3*period));
+	  	let rowIndex=parseInt((k % (3*period))/cols);
+	  	let colIndex=(k % (3*period))%cols;  	
+	  	BigMat2[matrixIndex][rowIndex][colIndex]=posTriplet[l++];
+  		}
+	}
+
+  //populate result string while tranversing BigMat2 with r_colind
+  let r_colind=0,result='';
+  for(let i=0; i < data.length;i++){
+  	let posTriplet=[];
+  	for(let j=0;j < 3;j++)
+  	posTriplet.push(BigMat2[parseInt(r_colind/period)][j][r_colind % period]);
+  	[a,b,c]=posTriplet;
+  	result+=BigMat[a-1][b-1][c-1]
+    r_colind++;
+  }
+  return result;
+}
+/* Clever
+let trifidEncode = (key, period, data) => {
+  let keySquare = new KeySquare(key), [s,r,c] = [...'src'].map(q => [...data].map(c => keySquare.encryption[c][q]).join``).map(q => q.match(new RegExp('.{1,'+period+'}','g')));
+  return s.map((x,i) => x + r[i] + c[i]).join``.match(/.{3}/g).map(x=>keySquare.decryption[''+x]).join``;
+};
+
+let trifidDecode = (key, period, data) => {
+  let keySquare = new KeySquare(key), hold = [...data].map((x,i,a,k=keySquare.encryption[x])=>''+k.s+k.r+k.c).join``.match(new RegExp('.{1,'+period*3+'}','g')).map(x=>x.match(new RegExp('.{1,'+x.length/3+'}','g'))).reduce((a,b)=>[a[0]+b[0], a[1]+b[1], a[2]+b[2]],['','',''])
+  return [...hold[0]].map((x,i)=>keySquare.decryption[''+x+hold[1][i]+hold[2][i]]).join``;
+};
+
+class KeySquare {
+  constructor (key, $ = {}, _ = {}) {
+    [...key].forEach((x,i,a,s=~~(i/9)+1,r=1+~~((i%9)/3),c=i%3+1)=>($[x]={s:s,r:r,c:c})&&(_[''+s+r+c]=x));
+    [this.encryption, this.decryption] = [$, _];
+  }
+};
+*/
+
+//club and spades are black, diamonds and hearts are red
+//club pairs with diamonds, spades pairs with hearts
+const arrangeDeck=(deck)=>{
+	let blackPile=[],redPile=[];
+	deck.forEach(x=>{
+					if(x[1]=='C' || x[1]=='S' || x=='XB') 
+						blackPile.push(x);
+					else 
+						redPile.push(x);
+				}
+			);
+	let newPile=[];
+	for(let i in blackPile){
+		newPile.push(redPile[i]);
+		newPile.push(blackPile[i]);		
+	}
+	return newPile;
+}
+
+
+let blackCards=['AC','2C','3C','4C','5C','6C','7C','8C','9C','TC','JC','QC','KC','AS','2S','3S','4S','5S','6S','7S','8S','9S','TS','JS','QS','KS','XB'];
+let   redCards=['AD','2D','3D','4D','5D','6D','7D','8D','9D','TD','JD','QD','KD','AH','2H','3H','4H','5H','6H','7H','8H','9H','TH','JH','QH','KH','XR'];
+let   allAlphs=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '];
+function CheckInput(message,deck){	
+	if(!message.match(/^[A-Z\s]+$/) || deck.length !=54) return false;
+  for(let card of deck){
+		if(blackCards.indexOf(card)==-1 && redCards.indexOf(card)==-1) return false;
+		if(deck.filter(x=>x==card).length > 1) return false;
+	}
+	return true;
+}
+
+class CardChameleon {
+	/**
+	 * Takes a String containing a message and an array of Strings representing a deck
+	 * of playing cards, and returns a String containing the text encrypted, or null if
+	 * the message, or the deck, is invalid.
+	 */
+	
+	encrypt(message, deck) {
+    if(message=='') return '';
+    if(!CheckInput(message,deck)) return null;
+		deck=arrangeDeck(deck);
+		return message.split('').reduce((summ,x,i)=>
+										  {
+										  	let blackCard=blackCards[allAlphs.indexOf(x)];
+										  	let redCardAbove=deck[deck.indexOf(blackCard)-1];
+										  	blackCard=blackCards[redCards.indexOf(redCardAbove)];
+										  	redCardAbove=deck[deck.indexOf(blackCard)-1];
+										  	let res=summ+allAlphs[redCards.indexOf(redCardAbove)];
+
+										  	deck[deck.indexOf(redCardAbove)]=deck[0];
+										  	deck[0]=redCardAbove;
+										  	deck=[...deck,deck[0],deck[1]];
+										  	deck=deck.slice(2,deck.length);
+
+										  	return res;
+										  },
+								''
+							  );
+		return '';
+	}
+
+	/**
+	 * Takes a String containing an encrypted message and an array of Strings
+	 * representing a deck of playing cards, and returns a String containing the
+	 * message decrypted, or null if the text, or the deck, is invalid.
+	 */
+	decrypt(encrypted, deck) {
+    if(encrypted=='') return '';
+    if(!CheckInput(encrypted,deck)) return null;
+		deck=arrangeDeck(deck);
+		return encrypted.split('').reduce((summ,x,i)=>
+										  {
+										  	let redCard=redCards[allAlphs.indexOf(x)];
+										  	let firstRed=redCard;
+										  	let blackCardBelow=deck[deck.indexOf(redCard)+1];
+										  	redCard=redCards[blackCards.indexOf(blackCardBelow)];
+										  	blackCardBelow=deck[deck.indexOf(redCard)+1];
+										  	let res=summ+allAlphs[blackCards.indexOf(blackCardBelow)];
+
+										  	deck[deck.indexOf(firstRed)]=deck[0];
+										  	deck[0]=firstRed;
+										  	deck=[...deck,deck[0],deck[1]];
+										  	deck=deck.slice(2,deck.length);
+
+										  	return res;
+										  },
+								''
+							  );
+    return '';
+	}
+}
+
+/*
+//Some other guy
+class CardChameleon{
+  
+  constructor(){
+    this.LB={' ':'XB'}                  // letter => black card
+    this.LR={' ':'XR'}                  // letter => red card
+    this.CL={XB:' ',XR:' '}             // card   => lettet
+    
+    let a='A23456789TJQK'
+    let b='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    for(let i=0,j=0;i<26;j=++i%13){
+      this.LB[b[i]]=a[j]+(i<13?'C':'S')
+      this.LR[b[i]]=a[j]+(i<13?'D':'H')
+      this.CL[a[j]+(i<13?'C':'H')]=b[i]
+      this.CL[a[j]+(i<13?'D':'S')]=b[i]
+    }
+  }
+  
+  valid(text,deck){
+    return /^[A-Z ]*$/.test(text)
+      && new Set(deck).size==54
+      && deck.every(e=>this.CL[e])
+  }
+  
+  interleave(deck){
+    let b=deck.filter(e=>/C|S|B/.test(e))
+    let r=deck.filter(e=>/D|H|R/.test(e))
+    return r.reduce((a,e,i)=>[...a,e,b[i]],[])
+  }
+  
+  encrypt(message,deck){
+    if(!this.valid(message,deck)) return null
+    let enc='',a,b,c,d,e,f,g,h,i,j
+    i=this.interleave(deck)
+    for(j of message){
+      a=this.LB[j]                      // 1. Find the black card in the deck
+      b=i.indexOf(a)                    //    corresponding to the character in the assignment table 
+      c=i[b-1]                          // 2. Look at the red card above this black card.
+      d=this.CL[c]                      //    Interpret it as a character in the assignment table
+      e=this.LB[d]                      // 3. Find the black card in the deck
+      f=i.indexOf(e)                    //    corresponding to this new character
+      g=i[f-1]                          // 4. Look at the red card above this black card
+      h=this.CL[g]                      //    Interpret it as a character and write to ciphertext
+      i[f-1]=i[0]                       // 5. Exchange this red card
+      i[0]=g                            //    with the one on the top of the deck (also red)
+      i.push(i.shift())                 // 6. Move the top two cards (one red
+      i.push(i.shift())                 //    one black) to the bottom
+      enc+=h
+    }
+    return enc
+  }
+
+  decrypt(encrypted, deck){
+    if(!this.valid(encrypted,deck)) return null
+    let dec='',a,b,c,d,e,f,g,h,i,j
+    i=this.interleave(deck)
+    for(j of encrypted){
+      a=this.LR[j]                      // 1. Find the red card in the dec
+      b=i.indexOf(a)                    //    corresponding to the character in the assignment table
+      c=i[b+1]                          // 2. Look at the black card below this red card
+      d=this.CL[c]                      //    Interpret it as a character in the assignment table
+      e=this.LR[d]                      // 3. Find the red card in the deck
+      f=i.indexOf(e)                    //    corresponding to this new character
+      g=i[f+1]                          // 4. Look at the black card below this red card
+      h=this.CL[g]                      //    Interpret it as a character and write to message
+      i[b]=i[0]                         // 5. Exchange the red card found at step 1
+      i[0]=a                            //    with the one on the top of the deck (also red)
+      i.push(i.shift())                 // 6. Move the top two cards (one red
+      i.push(i.shift())                 //    one black) to the bottom
+      dec+=h
+    }
+    return dec
+  }
+}
+*/
+//find out maximum score with weights limited by capacity
+function packBagpack(scores, weights, capacity) {
+    	return packBagHelper(scores, weights, capacity,0,0,0);
+}
+
+function packBagHelper(scores,weights,capacity,i_reached,scoreAcc,weightAcc){
+	if(i_reached == scores.length -1){
+		if(weightAcc + weights[i_reached] > capacity ) return scoreAcc;
+		return scoreAcc+scores[i_reached];
+	}
+	let score1=-1,score0;
+	score0=packBagHelper(scores,weights,capacity,i_reached+1,scoreAcc,weightAcc);
+	if(weights[i_reached]+weightAcc <= capacity)
+	score1=packBagHelper(scores,weights,capacity,i_reached+1,scoreAcc+scores[i_reached],weightAcc+weights[i_reached]);
+	if(score1 != -1 && score1 > score0)
+		return score1;
+	else
+		return score0;	
+}
+/*
+function packBagpack(scores, weights, capacity) {
+  let load = Array.from({ length: capacity + 1 }, () => 0);
+  for (let i = 0; i < weights.length; i++) {
+    load = load.map(
+      (l, w) => Math.max(l, weights[i] <= w && load[w - weights[i]] + scores[i])
+    );
+  }
+  return load.pop();
+}
+*/
+//arr is the sum, totalSides is the number of dice
+function rolldiceSumProbx(arr, totalSides){
+    var prob;
+    prob = rollDiceNumPos(arr,1,totalSides);
+    return prob;
+}
+function rollDiceNumPos(sumx,minNum,diceNum){
+	if(diceNum == 1){
+		if(sumx >= minNum && sumx < 7) return 1;
+		return 0;
+	}
+	// if(sumx < minNum) return 0;
+	if(sumx < 2*minNum) return 0; //This check was better sumx=9 cannot be acheived with minNum=5
+	let i=0,numTimes=0;
+	while( i < diceNum && sumx > minNum*i && minNum <= 6){
+		numTimes += rollDiceNumPos(sumx - minNum * i,minNum + 1,diceNum - i);
+		i++;
+	}
+	return numTimes;
+}
+
+function rolldiceSumProby(arr, totalSides,firstLevel=true){
+
+	if(totalSides <= 1){
+		if(arr < 7 && arr > 0) return 1;
+		return 0;
+	}
+	let res=0;
+	for(let i = 1; i < 7 && arr > i; i++){
+		res += rolldiceSumProb(arr - i,totalSides - 1,false);
+	}
+	if (!firstLevel)
+	return res;
+	return res/(6 ** totalSides);
+}
+
+function rolldiceSumProb(arr, totalSides){
+	let arrx=[[1,2,3],[4,5,6],[5,6,7]];
+	return printOutMatrix(arrx);
+	
+}
+
+function FindAllDiceCombs(sum,dicenum){
+	if(dicenum == 1){
+		if(sum <= 6) return [[sum]];
+		else return [];
+	}
+	let allCombinations=[];
+	for(let i=1 ; i < 7; i++){
+		if(sum - i <= 0) break;
+		let subCombinations = FindAllDiceCombs(sum - i,dicenum - 1);
+		if (subCombinations.length == 0) continue;
+		allCombinations=[...allCombinations,...subCombinations.map(x=>[i,...x])];
+	}	
+	return allCombinations;
+}
+//
+function rolldiceSumProb_cleverAnswer(arr, totalSides){
+    if (arr<totalSides || arr>totalSides*6) return 0;
+    if (totalSides===0) return 1;
+    let p = 0;
+    for (let i=1; i<=6; i++) p += rolldiceSumProb_cleverAnswer(arr-i, totalSides-1);
+    return p/6;
+}
+
+function josephusSurvivor(n,k){
+  
+ let men= Array(n).fill(1);
+  men=men.map((x,i)=>i+1);
+  let count=k,i=0;
+  let temp=0;
+  if(k==1) return men[men.length-1];
+  while(men.length > 1){
+  	if(temp++ > 20000) {console.log("overflow");return "niet";}
+  	if(men[i]!=0){
+  		count--;
+	  	if(count == 0){
+	  		count=k;
+	  		men[i]=0;
+
+	  	}
+	  }
+	  // i= (i == men.length-1)?0:i+1;
+	  if(i==men.length -1){
+	  	i=0;
+	  	men=men.filter(x=>x!=0);
+	  }else{
+	  	i+=1;
+	  }	 
+	}
+	return men[0];
+}
+function josephusSurvivor_clever(n, k){
+  return n < 1 ? 1 : (josephusSurvivor(n - 1, k) + --k) % n + 1;
+}
+
+function distributionOf(gold) {
+  let shares= GetAllElems(gold);
+  return [shares[0].reduce((sum,x)=>sum+gold[x],0),shares[1].reduce((sum,x)=>sum+gold[x],0)];
+}
+function GetAllElems(gold){
+	if(gold.length==0) 
+		return [[],[]];
+	if(gold.length==1){
+		return [[0],[]];
+	}else if(gold.length==2){
+		return gold[0] > gold[1]?[[0],[1]]:[[1],[0]];
+	}
+	carr_sub1 = GetAllElems(gold.slice(1,gold.length)).map(subarr=>subarr.map(x=>x+1));
+	carr_sub2 = GetAllElems(gold.slice(0,gold.length-1));
+	if(gold[0]+carr_sub1[1].reduce((sum,x)=>sum+x,0) > gold[1]+ carr_sub2[1].reduce((sum,x)=>sum+x,0)){
+		return [[0,...carr_sub1[1]],carr_sub1[0]];
+	}else{
+		return [[gold.length-1,...carr_sub2[1]],carr_sub2[0]];
+	}
+}
+function GetKeyArray(strr){
+	let sortedArr=strr.split('').sort((x,y)=>x.charCodeAt(0)-y.charCodeAt(0));	
+	let res=[];
+	for (let elem of strr.split('')){
+		for(let i in sortedArr){
+			if(sortedArr[i]==elem && res.indexOf(i)==-1){
+				res.push(i);
+				break;
+			}
+		}
+	}
+	return res;
+}
+
+function nico(key, message)  
+	{
+  	let keyArr=GetKeyArray(key);
+  	let klen=keyArr.length;
+ 	 let smallArray=Array(klen).fill(' ');
+  	let bigArray=[];
+  	for(let i in message.split(''))
+  		{
+  		if(bigArray.length < parseInt(i/klen) )
+  			{
+  			  bigArray.push(smallArray.join(''));
+  			  smallArray=Array(klen).fill(' ');
+  			}
+  		smallArray[keyArr[i%klen]]=message[i];
+  		}
+  		bigArray.push(smallArray.join(''));
+  		return bigArray.join('');
+	}
+
+function nico_clever(key, message)  {
+
+  let k = key.length
+  ,   m = message.length;
+  
+  if (m % k)
+    message += ' '.repeat(k - m % k);
+
+  let cipher = [...key]
+    .map((char, i) => [char, i])
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map((a, i) => a.concat(i))
+    .sort((a, b) => a[1] - b[1])
+    .map(a => a[2]);
+
+  let result = [...message ]
+    .map((char, i) => [char, Math.floor(i / k) * k + cipher[i % k]])
+    .sort((a, b) => a[1] - b[1])
+    .map(a => a[0])
+    .join('');
+
+  return result;
+  
+}
+function denico_clever(key, message)  {
+
+  let k = key.length
+  ,   m = message.length;
+  
+  if (m % k)
+    message += ' '.repeat(k - m % k);
+
+  let cipher = [...key]
+    .map((char, i) => [char, i])
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(a => a[1]);
+
+  let result = [...message ]
+    .map((char, i) => [char, Math.floor(i / k) * k + cipher[i % k]])
+    .sort((a, b) => a[1] - b[1])
+    .map(a => a[0])
+    .join('');
+
+  return result;
+  
+}
+
+function denico(key,message){
+	
+}
+
+function chooseBestSum(t, k, ls,tT=t) {
+    if(t < 0 || ls.length < k) return -1;
+    if(k==0) return tT-t;
+    ls.splice(0,1);
+    let x1=chooseBestSum(t,k,ls,tT);
+    let x2=chooseBestSum(t-ls[0],k-1,ls,tT);
+    if(x1 > x2) return x1;
+    return x2;
 }
 
 
@@ -671,12 +1211,67 @@ handleReadText=(err,data)=>{
 		// data=JSON.stringify(InterlacedSpiralCipher.decode(strxx));
 		strxx="cozy lummox gives smart squid who asks for job pen";
 		key='playfairjexample';
-		data=JSON.stringify(encipher(strxx,key));
+		// data=JSON.stringify(encipher(strxx,key));
+		key='EPSDUCVWYM+ZLKXNBTFGORIJHAQ';
+		period=5;
+		inp='DEFEND THE EAST WALL OF THE CASTLE+';//to be encoded
+		inp='SUEFECPHSEGYYJIXIMFOFOCEJLBSP';//to be decoded
+		// data=JSON.stringify(trifidEncode(key,period,inp));
+		// data=trifidDecode(key,period,inp);
 		// data=JSON.stringify(populateKeyMatrix(key));		
 
 		// orig="thecatinthebage";
 		// key="xxx xxx xx";
-		// data=JSON.stringify(IntroduceSpaces(orig,key));	
+		// data=JSON.stringify(IntroduceSpaces(orig,key));
+		
+
+		const deck = [
+					  "2C", "6H", "5S", "7S", "JS", "8C", "7C", "2D", "3D", "8D", "3C", "KS", "QS",
+					  "2S", "7D", "TD", "QC", "TS", "AH", "5C", "XB", "TH", "AC", "9H", "6D", "4C",
+					  "7H", "3S", "5H", "KC", "3H", "6C", "4D", "8H", "KH", "8S", "JC", "5D", "TC",
+					  "9D", "2H", "9C", "4S", "4H", "QD", "AS", "JH", "6S", "QH", "9S", "XR", "JD",
+					  "AD", "KD"
+					 ];
+
+
+	
+
+
+
+		// let blackCards=['AC','2C','3C','4C','5C','6C','7C','8C','9C','TC','JC','QC','KC','AS','2S','3S','4S','5S','6S','7S','8S','9S','TS','JS','QS','KS','XB'];
+		// let   redCards=['AD','2D','3D','4D','5D','6D','7D','8D','9D','TD','JD','QD','KD','AH','2H','3H','4H','5H','6H','7H','8H','9H','TH','JH','QH','KH','XR'];
+		// let   allAlphs=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '];
+		// data=printOutArray(arrangeDeck(deck));
+
+		// message="ATTACK TONIGHT ON CODEWARS";
+		// codedmessage="QNBSCTZQOLOBZNKOHUHGLQWLOK";	
+		// message="A";	
+		// codedmessage="B"; 
+
+		// if(process.argv[2] == 'd')
+		// data=CardChameleon.decrypt(codedmessage,deck);
+		// else
+		// data=CardChameleon.encrypt(message,deck);
+
+		// scores=[15, 10, 9, 5];
+		// weights = [1, 5, 3, 4];
+		// capacity = 8;
+		// data=JSON.stringify(packBagpack(scores, weights, capacity));
+
+		// data=''+printOutMatrix(FindAllDiceCombs(8,3));
+		// data= ''+ josephusSurvivor(5,3);
+		// gold = [140,649,340,982,105,86,56,610,340,879];
+		// data= JSON.stringify(GetAllElems(gold).map(subarr=>subarr.map(i=>gold[i])));
+		// data= JSON.stringify(distributionOf(gold));
+
+		// data=nico("crazy","secretmessage");
+		// data2=denico_clever("crazy",data);
+		ls=[162, 163, 165, 165, 167, 168, 170, 172, 173, 175];
+		k=3;
+		t=174;
+		data=''+chooseBestSum(t, k, ls);
+
+
 
 		fs.writeFile("./datum.json",data,errHandler);
 		}

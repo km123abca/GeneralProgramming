@@ -1,0 +1,5 @@
+api key: d8EHkRNqGo6vvBARvQumTpUAQ
+
+api secret: FNn9bV4BqUA2fAiGNh9jCZunb0Sm0uzvsxx3aRldzQZzwKX3NL
+
+Bearer token: AAAAAAAAAAAAAAAAAAAAAPqXYwEAAAAAZaChVFhvVTV7Jveb8QJBPlPrnfc%3DjQpONk7OgAvL1EKuV64scud3GYZepIQ3BUoEWxzyiFgIvN0mXU

@@ -3,6 +3,7 @@ let randomChoice=Math.floor(Math.random()*24);
 illuminate(0,randomChoice,ind);
 }
 let popUpVisible=false;
+let maxTime=10000;
 let nxtfn=()=>{
 	popUpVisible=false;
 	document.querySelector('#popUpWindow').style.visibility="hidden";
@@ -32,7 +33,7 @@ const illuminate=(j,val,ind)=>{
 }
 // runAnimation();
 
-function ShowPopup(txt,fn){
+function ShowPopup(txt){
  document.querySelector('#popUpWindow').style.visibility="visible";
  popUpVisible=true;
  document.querySelector('#puw__textSpace').innerHTML=txt; 
@@ -46,7 +47,7 @@ function Player(name,index){
 	this.active=false;
 	this.rolling=false;
 	this.timer=0;
-	this.maxTime=5000;
+	this.maxTime=maxTime;
 
 	this.activatePlayer=()=>{
 		this.active=true;
@@ -58,10 +59,12 @@ function Player(name,index){
 	this.update=()=>{
 		if(this.active && !this.rolling){			
 			this.timer+=deltaTime;
+			DecrementTimer();
 			if(this.timer > this.maxTime){
+				ResetTimer();
 				this.timer=0;
 				this.active=false;
-				this.turnScore=0;
+				this.turnScore=0;				
 				updatePoints(this.turnScore,this.totalScore,this.index);
 				deactivatePlayer(this.index);
 				gM.quit(this.index);
@@ -72,6 +75,7 @@ function Player(name,index){
 	this.throw=()=>{		
 		if(this.rolling) return false;
 		this.timer=0;
+		ResetTimer();
 		this.rolling=true;
 		deactivatePlayer(this.index);
 		runAnimation(this.index);
@@ -79,11 +83,13 @@ function Player(name,index){
 
 	this.pointScored=(pt)=>{
 		if(pt==6 || pt==5 ){
+			ShowPopup(`Whoops!!!!! You scored a ${pt} your turn is over, your score in this round is 0, next is ${gM.NextPlayer()}'s turn`);
 			this.totalScore-=this.turnScore;
+			this.rolling=false;
 			gM.quit(this.index);
 			return;
 		}
-		// ShowPopup('You have scored:'+pt+' pts');
+		ShowPopup('You have scored:'+pt+' pts');
 		this.turnScore+=pt;
 		this.totalScore+=pt;
 		updatePoints(this.turnScore,this.totalScore,this.index);
@@ -92,15 +98,24 @@ function Player(name,index){
 		activatePlayer(this.index);
 	}
 	this.quit=()=>{
-		if(this.rolling) return false;
-		this.rolling=false;
+		if(this.rolling) return false;	
+		ShowPopup(`You have scored ${this.turnScore} pts in this round, next turn is ${gM.NextPlayer()}'s`);	
 		this.active=false;
 		this.timer=0;
-		this.turnScore=0;
+		this.turnScore=0;		
 		updatePoints(this.turnScore,this.totalScore,this.index);
 		deactivatePlayer(this.index);
 	}
 
+}
+
+function DecrementTimer(){
+	let presentVal=parseInt(document.querySelector('#timerIndicator').innerHTML)*1000;
+	presentVal-=deltaTime;
+	document.querySelector('#timerIndicator').innerHTML=parseInt(presentVal/1000);
+}
+function ResetTimer(){
+	document.querySelector('#timerIndicator').innerHTML=parseInt(maxTime/1000);
 }
 
 function GameManager(){
@@ -117,11 +132,18 @@ this.update=()=>{
 this.startGame=()=>{
 	if(!this.gameStarted) {
 		alert("Game Started");
+		document.querySelector('#timerIndicator').style.visibility='visible';
+		document.querySelector('#timerIndicator').innerHTML=parseInt(maxTime/1000);
 		this.gameStarted=true;
 		this.players[this.activePlayer].activatePlayer();
 		activatePlayer(this.activePlayer);
 		
 	}
+}
+this.NextPlayer=()=>{
+	let n = this.activePlayer+1;
+	if(n > this.players.length) n=0;
+	return this.players[n].name;
 }
 
 this.activateNextPlayer=()=>{
@@ -144,7 +166,8 @@ this.throw=(i)=>{
 		this.players[i].throw();
 	}
 this.quit=(i)=>{
-	if(i!=this.activePlayer) return;
+	if(i!=this.activePlayer) return;	
+	ResetTimer();
 	this.players[i].quit();
 	this.activateNextPlayer();
 }

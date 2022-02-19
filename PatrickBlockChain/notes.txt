@@ -1,0 +1,187 @@
+Link: https://www.youtube.com/watch?v=M576WGiDBdQ
+
+github repo for course: https://github.com/smartcontractkit/full-blockchain-solidity-course-py
+
+https://youtu.be/M576WGiDBdQ?t=5935
+
+phase 1
+#SimpleStorage.sol
+pragma solidity ^0.6.0;
+contract SimpleStorage{
+	//address favoriteAddress=0x925e500b0c028664115087Af22465A2Bed8AeA52;    
+    //bool favoriteBool = false;
+    //string favoriteString ="String";
+    //int256 favoriteInt =-5;
+    //bytes32 favoriteBytes ="cat";
+
+    //uint256 public favoriteNumber =5;
+    uint256 favoriteNumber =5; //This is no more a public function. It means it cannot be seen any more in the deployed contract
+
+    //The store fn here consumes gas
+    function store(uint256 _favoriteNumber) public {
+    favoriteNumber = _favoriteNumber;
+    }
+
+    //A view fn just lets you view the state, hence does not consume gas
+    function retrieve() public view returns(uint256){
+        return favoriteNumber;
+    }
+}
+
+
+phase 2
+pragma solidity ^0.6.0;
+contract SimpleStorage{
+    //address favoriteAddress=0x925e500b0c028664115087Af22465A2Bed8AeA52;    
+    //bool favoriteBool = false;
+    //string favoriteString ="String";
+    //int256 favoriteInt =-5;
+    //bytes32 favoriteBytes ="cat";
+
+
+    //uint256 favoriteNumber =5;
+    uint256 favoriteNumber =5;
+
+    struct People{
+        uint256 favoriteNumber;
+        string name;
+    }
+    //People public person=People({favoriteNumber:34,name:"John"});
+    //People[1] public people;//an array with only one element
+    People[] public people;// a dynamic array
+
+    function store(uint256 _favoriteNumber) public {
+    favoriteNumber = _favoriteNumber;
+    }
+    function retrieve() public view returns(uint256){
+        return favoriteNumber;
+    }
+
+    function addPerson(string memory _name,uint256 _favoriteNumber) public{
+        people.push(People({favoriteNumber:_favoriteNumber,name:_name}));
+        // people.push(People(_favoriteNumber,_favoriteNumber));
+    }
+
+}
+
+//what is this : https://app.mycrypto.com/faucet
+
+19-01-2022
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+contract SimpleStorage{
+	//address favoriteAddress=0x925e500b0c028664115087Af22465A2Bed8AeA52;    
+    //bool favoriteBool = false;
+    //string favoriteString ="String";
+    //int256 favoriteInt =-5;
+    //bytes32 favoriteBytes ="cat";
+
+
+    //uint256 favoriteNumber =5;
+    uint256 favoriteNumber =5;
+
+    struct People{
+        uint256 favoriteNumber;
+        string name;
+    }
+    //People public person=People({favoriteNumber:34,name:"John"});
+    //People[1] public people;//an array with only one element
+    People[] public people;// a dynamic array
+
+    mapping(string => uint256) public nameToFavoriteNumber;
+
+    function store(uint256 _favoriteNumber) public {
+    favoriteNumber = _favoriteNumber;
+    }
+    function retrieve() public view returns(uint256){
+        return favoriteNumber;
+    }
+
+    function addPerson(string memory _name,uint256 _favoriteNumber) public{
+        people.push(People({favoriteNumber:_favoriteNumber,name:_name}));
+        // people.push(People(_favoriteNumber,_favoriteNumber));
+        nameToFavoriteNumber[_name]=_favoriteNumber;
+    }
+
+}
+
+
+21-01-2022: Here we learn creating and using a simplestorage contract instance from another contract, storage factory
+SimpleStorage.sol
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+contract SimpleStorage{
+    //address favoriteAddress=0x925e500b0c028664115087Af22465A2Bed8AeA52;    
+    //bool favoriteBool = false;
+    //string favoriteString ="String";
+    //int256 favoriteInt =-5;
+    //bytes32 favoriteBytes ="cat";
+
+
+    //uint256 favoriteNumber =5;
+    uint256 favoriteNumber =5;
+
+    struct People{
+        uint256 favoriteNumber;
+        string name;
+    }
+    //People public person=People({favoriteNumber:34,name:"John"});
+    //People[1] public people;//an array with only one element
+    People[] public people;// a dynamic array
+
+    mapping(string => uint256) public nameToFavoriteNumber;
+
+    function store(uint256 _favoriteNumber) public {
+    favoriteNumber = _favoriteNumber;
+    }
+    function retrieve() public view returns(uint256){
+        return favoriteNumber;
+    }
+
+    function addPerson(string memory _name,uint256 _favoriteNumber) public{
+        people.push(People({favoriteNumber:_favoriteNumber,name:_name}));
+        // people.push(People(_favoriteNumber,_favoriteNumber));
+        nameToFavoriteNumber[_name]=_favoriteNumber;
+    }
+
+}
+
+StorageFactory.sol
+//SPDX-License_Identifier: MIT
+pragma solidity ^0.6.0;
+import "./SimpleStorage.sol";
+contract StorageFactory{
+    SimpleStorage[] public simpleStorageArray;
+    function createSimpleStorageContract() public {
+        SimpleStorage simpleStorage = new SimpleStorage();
+        simpleStorageArray.push(simpleStorage);
+    }
+    function sfStore(uint256 _simpleStorageIndex,uint256 _simpleStorageNumber) public {
+        SimpleStorage simpleStorage = SimpleStorage(address(simpleStorageArray[_simpleStorageIndex]));
+        simpleStorage.store(_simpleStorageNumber);
+        //SimpleStorage(address(simpleStorageArray[_simpleStorageIndex])).store(_simpleStorageNumber);
+    }
+    function sfGet(uint256 _simpleStorageIndex) public view returns (uint256) {
+        SimpleStorage simpleStorage = SimpleStorage(address(simpleStorageArray[_simpleStorageIndex]));
+        return simpleStorage.retrieve();
+        //return SimpleStorage(address(simpleStorageArray[_simpleStorageIndex])).retrieve();
+    }
+}
+
+22-01-2022
+contract StorageFactory is SimpleStorage{  is the solidity version of inheritance
+
+23-01-2022
+
+ChainLink: A Decentralized oracle that gives you data like eth -> USD conversion rate
+https://faucets.chain.link/
+https://docs.chain.link/docs/link-token-contracts/
+https://faucets.chain.link/kovan
+
+24-01-2022
+all contract addresses
+https://docs.chain.link/docs/ethereum-addresses/
+
+28-01-2022
+https://youtu.be/M576WGiDBdQ?t=11383
+

@@ -1,0 +1,17 @@
+pip install py-solc-x
+pip install web3
+
+
+had to upgrade python to 3.10
+
+Solution to chainid not 1337 problem:
+https://stackoverflow.com/questions/70731492/the-transaction-declared-chain-id-5777-but-the-connected-node-is-on-1337#:~:text=3%20Answers&text=Had%20this%20issue%20myself%2C%20apparently,address%20and%20private%20key%20variable.
+
+
+
+
+Solution to persisting error even after the above
+transaction = SimpleStorage.constructor().buildTransaction({"gasPrice": w3.eth.gas_price, "chainId":chain_id,"from":my_address,"nonce":nonce})
+
+pip install python-dotenv
+

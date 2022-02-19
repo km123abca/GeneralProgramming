@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/EntireCourse
+EntireCourse/
 /encoder
 /__pycache__
 /.pnp

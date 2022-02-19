@@ -68,21 +68,44 @@ def price_plot(ticker,syear,smonth,sday,eyear,emonth,eday):
 	df.index=pd.DatetimeIndex(df['Date'])
 	df_sub=df.loc[start:end]
 	df_np=df_sub.to_numpy()
+	# print(df_np[0][5])
 	np_adj_close= df_np[:,5]
 	date_arr = df_np[:,1]
 	fig= plt.figure(figsize=(12,8),dpi=100)
-	axes= fig.add_axes([0,0,1,1])
+	axes= fig.add_axes([0.1,0.1,0.9,0.9])
 	axes.plot(date_arr,np_adj_close,color='navy')
 	axes.xaxis.set_major_locator(plt.MaxNLocator(8))
 	axes.grid(True,color='0.6',dashes=(5,2,1,2))
 	axes.set_facecolor('#FAEBD7')
 	plt.show()
 
+def download_multiple_stocks(syear,smonth,sday,eyear,emonth,eday,*args):
+	for x in args:
+		save_to_csv_from_yahoo(x,syear,smonth,sday,eyear,emonth,eday)
 
-# df=save_to_csv_from_yahoo('AMZN',2020,1,1,2020,12,31)
+def merge_df_by_column_name(col_name,syear,smonth,sday,eyear,emonth,eday,*tickers):
+	mult_df = pd.DataFrame()
+	start = f'{syear}-{smonth}-{sday}'
+	end = f'{eyear}-{emonth}-{eday}'
+	for x in tickers:
+		# mult_df[x] = web.DataReader(x,'yahoo',start,end)[col_name]
+		try:
+			df_stored = get_df_from_csv(x)
+			mult_df[x] = df_stored[col_name]
+		except:
+			print("error while dealing with "+x)
+			return 0
+	return mult_df
+
+def plot_return_mult_stocks(investment,stock_df):
+	(stock_df/stock_df.iloc[0] * investment).plot(figsize=(15,6))
+	plt.show()
+
+
+# df=save_to_csv_from_yahoo('AMZN',2020,1,1,2021,1,1)
 
 # amazon_dataframe= get_df_from_csv('AMZN')
-
+# print(amazon_dataframe.head())
 # add_daily_return_to_df(amazon_dataframe,'AMZN')
 
 
@@ -90,7 +113,18 @@ def price_plot(ticker,syear,smonth,sday,eyear,emonth,eday):
 # print(f'total return:{x}')
 
 
-# mplfinance_plot('AMZN','ohlc',2020,12,1,2020,12,25)
+# mplfinance_plot('AMZN','ohlc',2020,1,2,2020,1,14)
 
-price_plot('AMZN',2020,12,1,2020,12,25)
+# price_plot('AMZN',2020,1,1,2020,1,14)
+
+#Multiple stock download
+# tickers=["FB","AAPL","NFLX","GOOG"]
+# download_multiple_stocks(2020,1,1,2021,1,1,*tickers)
+
+
+
+tickers = ["FB","AMZN","AAPL","NFLX","GOOG"]
+mult_df = merge_df_by_column_name('Adj Close',2020,1,1,2021,1,1,*tickers)
+# print(mult_df)
+plot_return_mult_stocks(100,mult_df)
 

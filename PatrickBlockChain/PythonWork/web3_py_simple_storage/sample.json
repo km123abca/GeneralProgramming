@@ -1,0 +1,9 @@
+{
+  "language": "Solidity",
+  "sources": { "SimpleStorage.sol": { "content": simple_storage_file } },
+  "settings": {
+    "outputSelection": {
+      "*": { "*": ["abi", "metadata", "evm.bytecode", "evm.sourceMap"] }
+    }
+  }
+}

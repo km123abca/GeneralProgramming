@@ -1,0 +1,2 @@
+python screenshotter.py
+pause
