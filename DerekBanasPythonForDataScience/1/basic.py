@@ -91,6 +91,8 @@ def merge_df_by_column_name(col_name,syear,smonth,sday,eyear,emonth,eday,*ticker
 		# mult_df[x] = web.DataReader(x,'yahoo',start,end)[col_name]
 		try:
 			df_stored = get_df_from_csv(x)
+			# df_stored.index=df_stored['Date']  #check this
+			# mult_df[x] = df_stored.loc[start:end][col_name]
 			mult_df[x] = df_stored[col_name]
 		except:
 			print("error while dealing with "+x)
@@ -124,7 +126,7 @@ def plot_return_mult_stocks(investment,stock_df):
 
 
 tickers = ["FB","AMZN","AAPL","NFLX","GOOG"]
-mult_df = merge_df_by_column_name('Adj Close',2020,1,1,2021,1,1,*tickers)
+mult_df = merge_df_by_column_name('Adj Close',2020,8,1,2020,9,1,*tickers)
 # print(mult_df)
 plot_return_mult_stocks(100,mult_df)
 

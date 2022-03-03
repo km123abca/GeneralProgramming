@@ -15,3 +15,72 @@ transaction = SimpleStorage.constructor().buildTransaction({"gasPrice": w3.eth.g
 
 pip install python-dotenv
 
+npm install --global yarn (for installing ganache cli)
+
+yarn global add ganache-cli  #this did not work
+
+npm install -g ganache-cli
+
+to start your blockchain in cmd, run
+ganache-cli --deterministic   #so that private keys are always same
+
+
+We can run a ethereum test net node. But this is not always practical. So we use a third pary service that will run a node for us
+Infura.io
+created usname,pass,-> zackkanegam,1234ab
+
+create new project after choosing the ethereum tab
+find chainid from chainid.network,  rinkeby's chainid is 4
+
+
+https://eth-brownie.readthedocs.io/en/stable/install.html
+installing brownie
+python -m pip install --user pipx
+python -m pipx ensurepath
+pipx install eth-brownie
+
+after installing brownie, 
+brownie --version
+
+Prior to installing brownie creation of a virtual environment is required.
+However we could install brownie with pipx with out a virtual environment
+
+python -m pip install --user pipx
+python -m pipx ensurepath
+pipx install eth-brownie
+
+This did not work in our case,
+so we downloaded a portable version of python 3.8 from sourceforge.net, ran an envsetup.bat to add the python path and pip path to our %path%
+and created a virtual environment with python 3.8
+1.pip install pipenv , inside our new python 3.8
+2. Then inside our project folder, ran envsetup.bat and pipenv --python 3.8
+3. pipenv shell
+4. inside here reinstall all packages and eth-brownie with 'pip install'
+
+
+
+
+
+4.33
+*created a new folder for brownie and cd'd into it
+*brownie init 
+  A folder with the following subfolders gets created
+  	.gitattributes
+	.gitignore
+	build
+	contracts
+	interfaces
+	items.txt
+	reports
+	scripts
+	tests
+*Created SimpleStorage.sol folder inside contracts
+*run brownie compile
+*build/contracts/SimpleStorage.json gets created
+*brownie run scripts/deploy.py to run the script stored inside deploy
+
+*brownie accounts new <accountname> here firstaccount
+*enter your private key
+*pword:rukhM@nof
+*brownie accounts list #will list accounts stored
+*brownie accounts delete <accountname> # will delete accounts

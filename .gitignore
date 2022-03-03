@@ -2,13 +2,18 @@
 
 # dependencies
 /node_modules
+node_modules/
 /EntireCourse
 EntireCourse/
 /encoder
 /__pycache__
+__pycache__/
+pandas-tutorial_banas/
 /.pnp
 .pnp.js
 stuff.txt
+secrets.json
+credentials.json
 
 # testing
 /coverage

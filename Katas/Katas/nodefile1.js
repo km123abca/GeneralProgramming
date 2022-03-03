@@ -1170,20 +1170,426 @@ function denico_clever(key, message)  {
   
 }
 
-function denico(key,message){
-	
+function VigenèreCipher(key, abc) {
+  this.key=key.split('').map(x=>[x,abc.indexOf(x)]);
+  this.encode = function (str) {
+    // key=key.split('').map(x=>[x,abc.indexOf(x)]);
+    return str.split('').map(
+    					(x,i)=>
+    					   {
+    					   	if(this.key[i%key.length][1]==-1 || abc.indexOf(x)==-1) return x;
+    					   	let newPos=abc.indexOf(x)+this.key[i%key.length][1];
+    					   	newPos=newPos >= abc.length?newPos-abc.length:newPos;
+    					   	return abc[newPos];
+    					   }
+    	              ).join('');
+
+  };
+  this.decode = function (str) {
+    // key=key.split('').map(x=>[x,abc.indexOf(x)]);
+    return str.split('').map(
+    					(x,i)=>
+    					   {
+    					   	if(this.key[i%key.length][1]==-1 || abc.indexOf(x)==-1) return x;
+    					   	let newPos=abc.indexOf(x)-this.key[i%key.length][1];
+    					   	newPos=newPos < 0?newPos+abc.length:newPos;
+    					   	return abc[newPos];
+    					   }
+    	              ).join('');
+  };
 }
 
-function chooseBestSum(t, k, ls,tT=t) {
-    if(t < 0 || ls.length < k) return -1;
-    if(k==0) return tT-t;
-    ls.splice(0,1);
-    let x1=chooseBestSum(t,k,ls,tT);
-    let x2=chooseBestSum(t-ls[0],k-1,ls,tT);
-    if(x1 > x2) return x1;
+function VigenèreCipher_clever(key, abc) {
+  var self = this;
+  var size = abc.length;
+    
+  this.transform = function (str, getIndex) {
+    return str.split('').map(function(ch, index) {
+      return abc.indexOf(ch) >= 0 ? abc[getIndex(ch, index)] : ch;
+    }).join('');
+  }
+
+  this.enocodeIndex = function(ch, index) {
+    return (abc.indexOf(ch) + abc.indexOf(key.charAt(index % key.length)) + size) % size
+  }
+
+  this.decodeIndex = function(ch, index) {
+    return (abc.indexOf(ch) - abc.indexOf(key.charAt(index % key.length)) + size) % size
+  }
+
+  this.encode = function (str) {
+    return this.transform(str, this.enocodeIndex)
+  };
+  this.decode = function (str) {
+    return this.transform(str, this.decodeIndex)
+  };
+}
+
+function chooseBestSum(t, k, ls,tT=t,pid=0) {
+	let randId=parseInt(Math.random()*10000);
+	// console.log(`${randId}. received t=${t},k=${k} and list=${JSON.stringify(ls)} from ${pid}`);
+    if(t < 0 || ls.length < k) 
+    {    	
+    	// console.log(`${randId}. returning -1 at 1181`);
+    	return -1;
+    }
+    if(k==0)
+    	{ 
+    	// console.log(`${randId}. returning ${tT-t}`);
+    	return tT-t;
+    	}  
+    let elem=ls[0]; 
+    let slicedList= ls.filter((x,i)=>i!=0);
+    let x1=chooseBestSum(t,k,slicedList,tT,randId);
+    let x2=chooseBestSum(t-elem,k-1,slicedList,tT,randId);
+    
+    if(x1 > x2) 
+    	{
+    	// console.log(`${randId}. returning ${x1}`);
+    	return x1;
+    	}
+    // console.log(`${randId}. returning ${x2}`);
     return x2;
 }
 
+function chooseBestSum_1(t, k, ls) {
+  if(k == 0) {
+    return 0;
+  }
+  if(t <= 0 || k < 0 || ls.length < k) {
+    return null;
+  }
+  var best = 0;
+  for(var i = 0; i < ls.length; i++) {
+    var l = ls.slice();
+    l.splice(i, 1);
+    var v = ls[i], c = chooseBestSum(t-v, k-1, l);
+    if(c != null && c+v > best && c+v <= t) {
+      best = c+v;
+    }
+  }
+  return best > 0 ? best : null;
+}
+
+// ls=[50, 55, 57, 58, 60];
+// 		k=3;
+// 		t=174;
+// 		data=''+chooseBestSum(t, k, ls);
+
+function convertFrac(lst){
+  let lcm=findLCM(lst.map(x=>x[1]));
+  return lst.reduce((s,x)=>s+`(${lcm/x[1]*x[0]},${lcm})`,'');
+}
+function findLCM(lst){
+	let mults=[1];
+	let val=2;
+	let largest=lst.sort((a,b)=>a-b)[lst.length-1];
+
+	while(lst.filter(x=>x!=1).length != 0)
+		{
+		if(val > largest) break;
+		let oneValPushed=false;
+		lst=lst.map(x=>{
+						if(x%val == 0)
+							{
+							if(!oneValPushed)
+								{
+								mults.push(val);
+								oneValPushed=true;
+								}
+							return x/val;
+							}
+						return x;
+						} 
+				   );
+		if(!oneValPushed)
+		val+=1;
+		}
+	
+	return mults.reduce((x,s)=>s*x,1);
+}
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const lcm = (a, b) => a * b / gcd(a, b);
+
+function convertFracsmart(arr) {
+  const cd = arr.reduce((a, [_, d]) => lcm(d, a), 1);
+  return arr.map(([n, d]) => `(${n * cd/d},${cd})`).join('');
+}
+
+
+//Euler problems
+function smallestMult(){
+	arr=Array(20).fill(1).map((x,i)=>i+1);
+	return arr.reduce((lc,x)=>lcm(lc,x),1);
+}
+const allMult=()=>{
+	let lim=1000,s=0;
+	for(let i=1;i < 1000;i++){
+		if(i%3==0 || i%5==0){
+			s+=i;
+		}
+	}
+	return s;
+}
+
+const evenFibo=()=>{
+	let lim=4e6;
+	let startNum=0;
+	let secondNum=1;
+	let summ=0;
+	while(secondNum < lim){
+		let temp=secondNum;
+		secondNum=secondNum+startNum;
+		startNum=temp;
+		summ+=(secondNum %2==0)?secondNum:0;
+	}
+	return summ;
+}
+const largestPrimeFac=(num=600851475143)=>{
+	let i=parseInt(Math.sqrt(num))+1;
+	while(i>0)
+		{
+		i--;		
+		if(num%i==0)
+			{
+			 let flg=true;
+			 for(let j=2;j<=Math.sqrt(i);j++)
+			 	{
+		 		if(i%j == 0)
+			 		{
+		 			flg=false;
+		 			break;
+			 		}
+			 	}
+			 if (flg) return i;
+			}
+		}
+	return 1;
+}
+
+const LargestPalindrome=()=>{
+	let firstNum=0,secondNum=0;
+	let largestNum=0;
+	for(let i=999;i>99;i--)
+		for(let j=999;j>99;j--)
+			{
+				if(i*j > largestNum && checkPalindrome(i*j))
+					{
+					 largestNum=i*j;
+					}
+			}
+		return largestNum;
+	
+}
+const checkPalindrome=(num)=>{
+	let num1=''+num;
+	let num2=''+num;
+	num2=[...num2].map((x,i)=>[x,i]).sort((a,b)=>b[1]-a[1]).map((x,i)=>x[0]).join('');
+	return num1==num2;
+}
+
+function sumsquares(n=10){
+let ssquare=n*(n+1)*(2*n+1)/6;
+let wholeSquare=(n*(n+1)/2)**2;
+return wholeSquare-ssquare;
+}
+
+function nthprime(n=6)
+	{
+	let num=1;
+	while(n > 0)
+		{
+		num+=1;
+		let startFac=parseInt(Math.sqrt(num));
+		while(startFac > 1)
+			{
+			 if(num % startFac ==0)
+			 	break;
+			 startFac-=1;
+			}
+		if(startFac == 1) n-=1;
+		
+		}
+	return num;
+	}
+
+function thirtennadj(k=13)
+	{
+	let numString='7316717653133062491922511967442657474235534919493496983520312774506326239578318016984801869478851843858615607891129494954595017379583319528532088055111254069874715852386305071569329096329522744304355766896648950445244523161731856403098711121722383113622298934233803081353362766142828064444866452387493035890729629049156044077239071381051585930796086670172427121883998797908792274921901699720888093776657273330010533678812202354218097512545405947522435258490771167055601360483958644670632441572215539753697817977846174064955149290862569321978468622482839722413756570560574902614079729686524145351004748216637048440319989000889524345065854122758866688116427171479924442928230863465674813919123162824586178664583591245665294765456828489128831426076900422421902267105562632111110937054421750694165896040807198403850962455444362981230987879927244284909188845801561660979191338754992005240636899125607176060588611646710940507754100225698315520005593572972571636269561882670428252483600823257530420752963450';
+	let largest=0;
+	for(let i=0;i < numString.length-k;i++)
+		{
+		let subSum=1;
+		for(let j=i ;j < i+k;j++)
+			{
+			  subSum*= parseInt(numString[j]);			  
+			}
+		if(subSum > largest)
+			largest=subSum;
+		}
+	return largest;
+	}
+
+function pythTriplet()
+	{
+	for(let i=400;i<1000;i++)
+		{
+		// console.log('here');
+		result_array=sumOfSq2(i*i,2);
+		if(result_array.length==0) continue;
+		for(let result_array_elem of result_array)
+			{
+			[a,b]=result_array_elem;
+			if(a+b+i==1000)
+				return [a,b,i];
+			}			
+		}
+	return [-1];
+	}
+
+function pythTriplet2()
+	{
+		for(let a=1;a < sum/3;a++)
+			{
+			 return false;
+			}
+	}
+
+function sumOfSq(num,n=1)
+	{
+	
+	if(num<=0)
+		{
+		 return [];
+		}
+	else if(n==1)
+		{
+		 var num_sqroot=parseInt(Math.sqrt(num));
+		 if(num== num_sqroot*num_sqroot) 
+		 	return [num_sqroot];
+		 return [];
+		}
+
+	let m=parseInt(Math.sqrt(num));
+	while (m > 0)
+		{
+		let res=sumOfSq(num - m*m,n-1);
+		if(res.length!=0)
+			{
+			return [m,...res];
+			}
+		m-=1;
+		}
+		return [];		
+	}
+
+function sumOfSq2(num,n=1)
+	{	
+	if(num<=0)
+		{
+		 return [];
+		}
+	else if(n==1)
+		{
+		 var num_sqroot=parseInt(Math.sqrt(num));
+		 if(num== num_sqroot*num_sqroot) 
+		 	return [[num_sqroot]];
+		 return [];
+		}
+
+	let m=parseInt(Math.sqrt(num));
+	let result_list=[];
+	while (m > 0)
+		{
+		let res=sumOfSq2(num - m*m,n-1);
+		if(res.length!=0)
+			{
+			try
+				{
+				result_list=[...result_list,...res.map(x=>[m,...x])];
+				}
+			catch(err)
+				{
+					console.log('analysing '+JSON.stringify(res));
+					throw new Error("not an error");
+
+				}
+			}
+		m-=1;
+		}
+		return result_list;		
+	}
+
+function sumOfPrimes(num)
+	{
+		let sumx=0;
+		for(let i=2;i<num;i++)
+		{			
+		if(IsPrime(i)) 
+			{
+			// console.log(`${i} is prime`);
+			sumx+=i;
+			}
+		}
+		return sumx;
+	}
+
+function IsPrime(num)
+	{
+	 for(let i=2;i<=Math.sqrt(num);i++)
+	 	if(num % i==0) return false;
+	 return true;
+	}
+
+function FindMaxProducth(data,posi=0,posj=0,dir='vert',n=4)
+	{
+		// console.log('analysing '+data[posi][posj]);
+		let i=0,j=1;
+		if(dir=='vert')
+			{
+			 i=1;
+			 j=0;
+			} 
+		else if(dir=="diag")
+			{
+			i=1;
+			j=1;
+			}
+		if(posi >= data.length || posi < 0 || posj >=data[0].length || posj < 0)
+			{
+			 return 0;
+			}
+		else if(n==1)
+			{
+			return data[posi][posj];
+			}		
+		
+		return data[posi][posj]*FindMaxProducth(data,posi+i,posj+j,dir,n-1);
+	}
+
+function FindMaxProduct(data)
+	{
+		// return FindMaxProducth(data,6,8,'diag');
+		let dirs=['vert','diag','hori'];
+		let max=0;
+		let result=[];
+		for(let i1=0;i1<data.length;i1++)
+		for(let j1=0;j1<data[0].length;j1++)
+		for(let x of dirs)
+			{
+				let product=FindMaxProducth(data,i1,j1,x);
+				if(product > max)
+					{
+					max=product;
+					result=[i1,j1,x];
+					}
+			}
+		console.log(JSON.stringify(result));
+		return max;
+	}
+
+
+//Euler problems ends 1536
 
 handleReadText=(err,data)=>{
 	if(err)
@@ -1266,12 +1672,28 @@ handleReadText=(err,data)=>{
 
 		// data=nico("crazy","secretmessage");
 		// data2=denico_clever("crazy",data);
-		ls=[162, 163, 165, 165, 167, 168, 170, 172, 173, 175];
-		k=3;
-		t=174;
-		data=''+chooseBestSum(t, k, ls);
 
 
+		// ls=[50, 55, 57, 58];
+		// k=3;
+		// t=163;
+		// data=''+chooseBestSum(t, k, ls);
+
+		// ls=[ [1, 2], [1, 3], [1, 4] ];
+		// data=convertFrac(ls);//206459
+
+		// data=JSON.stringify(largestPrimeFac(133));
+
+		// data=''+smallestMult();
+
+		// var alphabet = 'abcdefghijklmnopqrstuvwxyz';
+		// var key = 'password';
+		// var c = new VigenèreCipher(key, alphabet);
+		// data=c.decode('laxxhsj');
+
+		data=data.split('\r\n');
+		data=data.map(x=>x.split(' ').map(y=>parseInt(y)));
+		data=''+FindMaxProduct(data);
 
 		fs.writeFile("./datum.json",data,errHandler);
 		}
