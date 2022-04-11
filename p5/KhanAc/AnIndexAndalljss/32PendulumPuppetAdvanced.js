@@ -82,7 +82,7 @@ Pendulum.prototype.display = function() {
        this.armLength * sin(this.angle),
        this.armLength * cos(this.angle));
     this.position.add(this.currentOrigin);
-    stroke(0, 0, 0);
+    stroke(0, 255, 0);
     strokeWeight(3);
     line(this.currentOrigin.x, this.currentOrigin.y, this.position.x, this.position.y);
     fill(224, 194, 134);
@@ -114,7 +114,7 @@ Pendulum.prototype.handleDrag = function(mx, my) {
 
 
 draw = function() {
-    background(255);
+    background(0);
 
     // Draw the body
     strokeWeight(4);

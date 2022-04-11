@@ -84,3 +84,54 @@ and created a virtual environment with python 3.8
 *pword:rukhM@nof
 *brownie accounts list #will list accounts stored
 *brownie accounts delete <accountname> # will delete accounts
+
+*creating tests and running in brownie
+*create test_simple_storage.py inside tests folder
+*write test code inside
+*brownie test #to run the test, a green dot indicates a successful test
+*brownie test -k test_updating_storage # to test a specific function
+*brownie test --pdb  #if you run this, if something is wrong in your code, you get thrown into a python shell
+*you can also try, brownie test -s  #says passed when a test is passed
+*docs.pytest.org #see all options
+
+Deploying to actual test nets rather than ganache-cli
+###############################
+*Add,  export WEB3_INFURA_PROJECT_ID = 9d7d6c82b0cd424a95ae6055cd9353b4 to the .env file
+*Also add export PRIVATE_KEY=<your privkey>
+
+*create brownie-config.yaml as
+dotenv: .env
+wallets:
+  from_key: ${PRIVATE_KEY}
+
+def deploy_simple_storage():	
+	account=get_account() #this will fetch private key from yaml file
+	simple_storage=SimpleStorage.deploy({"from":account})
+	stored_value= simple_storage.retrieve()	
+	transaction=simple_storage.store(15,{"from":account})
+	transaction.wait(1)
+	updated_value=simple_storage.retrieve()
+	print(updated_value)
+
+def get_account():
+	if network.show_active() == "development":
+		return accounts[0]
+	else:
+		return accounts.add(config["wallets"]["from_key"])
+
+now 
+brownie run scripts/deploy_b.py --network rinkeby
+
+##################################
+
+Type, brownie console #This will throw you inside a console
+here you can deploy a simple storage contract,
+simple_storage=SimpleStorage.deploy({"from":account})
+
+
+Now lets implement the fundme code with brownie and deploy it in the local ganache chain
+create 
+brownie_fundme
+run, brownie init
+put FundMe.sol inside contracts
+create brownie-config.yaml and set it up appropriately

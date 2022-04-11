@@ -1,0 +1,121 @@
+		// let blackCards=['AC','2C','3C','4C','5C','6C','7C','8C','9C','TC','JC','QC','KC','AS','2S','3S','4S','5S','6S','7S','8S','9S','TS','JS','QS','KS','XB'];
+		// let   redCards=['AD','2D','3D','4D','5D','6D','7D','8D','9D','TD','JD','QD','KD','AH','2H','3H','4H','5H','6H','7H','8H','9H','TH','JH','QH','KH','XR'];
+		// let   allAlphs=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '];
+		// data=printOutArray(arrangeDeck(deck));
+
+		// message="ATTACK TONIGHT ON CODEWARS";
+		// codedmessage="QNBSCTZQOLOBZNKOHUHGLQWLOK";	
+		// message="A";	
+		// codedmessage="B"; 
+
+		// if(process.argv[2] == 'd')
+		// data=CardChameleon.decrypt(codedmessage,deck);
+		// else
+		// data=CardChameleon.encrypt(message,deck);
+
+		// scores=[15, 10, 9, 5];
+		// weights = [1, 5, 3, 4];
+		// capacity = 8;
+		// data=JSON.stringify(packBagpack(scores, weights, capacity));
+
+		// data=''+printOutMatrix(FindAllDiceCombs(8,3));
+		// data= ''+ josephusSurvivor(5,3);
+		// gold = [140,649,340,982,105,86,56,610,340,879];
+		// data= JSON.stringify(GetAllElems(gold).map(subarr=>subarr.map(i=>gold[i])));
+		// data= JSON.stringify(distributionOf(gold));
+
+		// data=nico("crazy","secretmessage");
+		// data2=denico_clever("crazy",data);
+
+
+		// ls=[50, 55, 57, 58];
+		// k=3;
+		// t=163;
+		// data=''+chooseBestSum(t, k, ls);
+
+		// ls=[ [1, 2], [1, 3], [1, 4] ];
+		// data=convertFrac(ls);//206459
+
+		// data=JSON.stringify(largestPrimeFac(133));
+
+		// data=''+smallestMult();
+
+		// var alphabet = 'abcdefghijklmnopqrstuvwxyz';
+		// var key = 'password';
+		// var c = new VigenèreCipher(key, alphabet);
+		// data=c.decode('laxxhsj');
+
+		// data=data.split('\r\n');
+		// data=data.map(x=>x.split(' ').map(y=>parseInt(y)));
+		// data=''+highlyDiv();
+
+		// data=data.split('\r\n');
+		// data=data.map(x=>parseInt(x));
+		// data=FindSum(data);
+
+		// data=''+MaxCollatz();
+
+		// data=''+numRoutes();
+
+		// data= ''+powx(1000).split('').reduce((s,x)=>s+parseInt(x),0);
+
+		// data=letterToWord('1000');
+		// data=''+numLetters(1000);
+
+		/*
+		data=data.split('\r\n');
+		let triangleDict={};
+		for(let i=0;i<data.length;i++)
+			triangleDict[i]=data[i].split(' ').map(x=>parseInt(x));
+		// data=JSON.stringify(triangleDict);
+		data=''+FindMaxTriangleSum(triangleDict);
+		*/
+		// rootx=GetDataInTree(data);
+		// data=rlrTraverse(rootx);
+
+		// data=''+CountSundays();
+
+		// data=fac2(100).split('').reduce((sum,x)=>sum+parseInt(x),0)+'';
+
+		// data= checkSumOfDivisors(284)+'';
+		// data=''+populateAmicable();
+
+		// let rootNode=GetDataInTree(data);
+		// data=rlrTraverse(rootNode);
+
+		// data=hamsterMe("hamster","helpme");
+
+
+		// data=data.replace(/[\s]+/g,' ').split(' ').join('\n');
+		// data=justify(data,10);	
+		// data=simpleHash("hi","salt",2);
+		// data=stopAt(6,20);
+		// data=JSON.stringify(find4Number(99));
+		// data=JSON.stringify(IterativeRotationCipher.encode(10,"If you wish to make an apple pie from scratch, you must first invent the universe."));
+		// data=JSON.stringify(IterativeRotationCipher.decode("10 hu fmo a,ys vi utie mr snehn rni tvte .ysushou teI fwea pmapi apfrok rei tnocsclet"));
+		// data=JSON.stringify(IterativeRotationCipher.decode("14 daue ilev is a munbune Traurecracy."));
+
+		strxx="True evil is a mundane bureaucracy.";
+		// strxx="10 hu fmo a,ys vi utie mr snehn rni tvte .ysushou teI fwea pmapi apfrok rei tnocsclet";
+		strxx="36 ws h weA dgIaa ug owh n!asrit git \n msm phw teaI'e tanantwhe reos\ns ther! aHeae \'gwadin\nt haw n htoo ,I\'i sy aohOy";
+		n=10;
+		// data=JSON.stringify(IterativeRotationCipher.encode(n,strxx));
+		// data=JSON.stringify(IterativeRotationCipher.decode(strxx));
+
+		strxx="Romani_ite_domum";
+		strxx="Rntodomiimuea__m";
+		// data=JSON.stringify(InterlacedSpiralCipher.decode(strxx));
+		strxx="cozy lummox gives smart squid who asks for job pen";
+		key='playfairjexample';
+		// data=JSON.stringify(encipher(strxx,key));
+		key='EPSDUCVWYM+ZLKXNBTFGORIJHAQ';
+		period=5;
+		inp='DEFEND THE EAST WALL OF THE CASTLE+';//to be encoded
+		inp='SUEFECPHSEGYYJIXIMFOFOCEJLBSP';//to be decoded
+		// data=JSON.stringify(trifidEncode(key,period,inp));
+		// data=trifidDecode(key,period,inp);
+		// data=JSON.stringify(populateKeyMatrix(key));		
+
+		// orig="thecatinthebage";
+		// key="xxx xxx xx";
+		// data=JSON.stringify(IntroduceSpaces(orig,key));

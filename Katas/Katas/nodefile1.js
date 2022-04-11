@@ -1039,6 +1039,42 @@ function rolldiceSumProb_cleverAnswer(arr, totalSides){
     return p/6;
 }
 
+function hamsterMe(code, message) 
+	{
+	let result='';
+	for(let i in message)
+		{		 
+		 //result+=fn(message(i));
+		let foundInCode=false;
+		let keysArr=[];		
+		for(let j in code)
+		 	{
+		 	 if(code[j]==message[i])
+		 	 	{		 	 	 
+		 	 	 result+=code[j]+'1';
+		 	 	 foundInCode=true;
+		 	 	 break;		 	 	 
+		 	 	}		 	
+		 	 keysArr.push([code[j],GetPosVal(code[j],message[i])]);
+		 	}
+	 	if(foundInCode)
+	 		{
+	 		 continue;
+	 		}
+	 	let selected=keysArr.sort((a,b)=>a[1]-b[1])[0];
+	 	result+=selected[0]+selected[1];
+		}
+    return result;
+	}
+
+function GetPosVal(ch1,ch2)
+	{
+	if(ch2.charCodeAt(0) > ch1.charCodeAt(0))
+		return ch2.charCodeAt(0)-ch1.charCodeAt(0)+1;
+	else
+		return 'z'.charCodeAt(0)-ch1.charCodeAt(0)+ch2.charCodeAt(0)-'a'.charCodeAt(0)+2;
+	}
+
 function josephusSurvivor(n,k){
   
  let men= Array(n).fill(1);
@@ -1569,25 +1605,317 @@ function FindMaxProducth(data,posi=0,posj=0,dir='vert',n=4)
 
 function FindMaxProduct(data)
 	{
+		// return [data.length,data[0].length];
 		// return FindMaxProducth(data,6,8,'diag');
 		let dirs=['vert','diag','hori'];
-		let max=0;
+		let max=[111111,111111,111111];
 		let result=[];
 		for(let i1=0;i1<data.length;i1++)
 		for(let j1=0;j1<data[0].length;j1++)
 		for(let x of dirs)
 			{
 				let product=FindMaxProducth(data,i1,j1,x);
-				if(product > max)
+				if(product > max[0])
 					{
-					max=product;
+					max=max.map(
+								(x,i)=>{
+										if(i==0) return product;
+										return max[i-1];
+									   }
+					           );	
+					
 					result=[i1,j1,x];
 					}
 			}
 		console.log(JSON.stringify(result));
-		return max;
+		return max[2];
 	}
 
+
+function highlyDiv()
+	{
+	let max=0;
+	let facDict={};
+	for(let i=10000;i<20000;i++)
+		{
+			let num=i/2*(i+1);
+			let facs=0;
+			for(let j=1;j<=Math.sqrt(num);j++)
+			{
+				if(num%j==0) facs+=1;
+			}
+			facs*=2;
+			if(parseInt(Math.sqrt(num))==Math.sqrt(num)) facs-=1;
+			if(facs > max)
+				max=facs;
+			if(facs > 500)
+				return num+" ,target achieved";
+		}
+	return max+ " factors found";
+	}
+
+function FindSum(data)
+	{
+		sum=data.reduce((sum,x)=>sum+x,0);
+		// let sum=0;
+		// for(let i=0;i< data.length;i++)sum+=data[i];
+		return ""+(sum);
+	}
+function Collatz(n)
+	{
+		let terms=1;
+		while(n>1)
+		{
+			n=n%2==0?n/2:3*n+1;
+			terms+=1;
+		}
+		return terms;
+	}
+function MaxCollatz()
+	{
+		let maxElems=0;
+		let num=0;
+		let strr='';
+		for(let i=10;i<1000000;i++)
+		{
+			let res=Collatz(i);
+			if(res > maxElems)
+			{				
+				maxElems=res;
+				num=i;
+			}
+		}
+		return 'num:'+num+", length:"+maxElems;
+	}
+function numRoutes()
+	{
+		return fac(40)/(fac(20)*fac(20));
+	}
+function fac(x)
+	{
+		return x<=1?1:x*fac(x-1);
+	}
+function SumOfDigits(dig)
+	{
+	return (''+dig).split('').map(x=>parseInt(x)).reduce((s,x)=>s+x,0);
+	}
+function convToSting(num)
+	{
+		let strr='';
+		while(num > 0)
+		{
+			strr=num%10+strr;
+			num=parseInt(num/10);
+		}
+		return strr;
+	}
+function SumOfDigitsPower(p)
+	{
+		let empt='';
+		for(let i=1;i<=p;i++)
+		{
+		 let num=2**i;
+		 // empt+=`p=${i}, num=${num}, sum=${SumOfDigits(num)}`+'\n';
+		 empt+=SumOfDigits(num)+'\t';
+		}
+		return empt;
+	}
+function powx(p)
+	{
+		let numStr='2';
+		for(let i=0;i<(p-1);i++)
+		{
+			numStr=multBy2(numStr);
+		}
+		return numStr;
+	}
+function multBy2(numString)
+	{
+	let carry=0;
+	let resultString='';
+	while(numString.length>0)
+		{
+		let prod=2*parseInt(numString[numString.length-1])+carry;
+		if(prod >=10)
+			{
+			carry=1;
+			prod=prod%10;
+			}
+		else if(carry!=0)
+			carry=0;
+		resultString=prod+resultString;
+		numString=numString.substr(0,numString.length-1);
+		}
+	if(carry > 0)
+		resultString=carry+resultString;
+	return resultString;
+	}
+
+const numLetters=(num)=>{
+	let wrds=0;
+	for(let i=1;i<=num;i++)
+	{
+		wrds+=letterToWord(''+i).length;
+	}
+	return wrds;
+}
+const letterToWord=(x)=>
+						{
+						  let numMappings={1:'one',	2:'two',3:'three',4:'four',5:'five',6:'six',	7:'seven',	8:'eight',	9:'nine',	10:'ten',	11:'eleven',	12:'twelve',	13:'thirteen',	14:'fourteen',	15:'fifteen',	16:'sixteen',	17:'seventeen',	18:'eighteen',	19:'nineteen',	20:'twenty',	30:'thirty',	40:'forty',	50:'fifty',	60:'sixty',	70:'seventy',	80:'eighty',	90:'ninety',	100:'hundred',	1000:'thousand'};
+						  let wordString='';
+						  while(x.length>0)
+						  		{
+							  	 if(x.length==4)
+							  	 	{
+							  	 	if(!numMappings[x[0]]) return `${x[0]} not found`;
+							  	 	wordString+=numMappings[x[0]]+'thousand';
+							  	 	x=x.substr(1,x.length-1);
+							  	 	}
+							  	 else if(x.length==3)
+							  	 	{
+							  	 	if(!numMappings[x[0]]) return `${x[0]} not found`;
+							  	 	wordString+=numMappings[x[0]]+'hundred'+'and';
+							  	 	x=x.substr(1,x.length-1);
+
+							  	 	}
+							  	 else if(x.length==2)
+							  	 	{
+							  	 	if(x[0]!=1)
+								  	 	{
+								  	 	if(!numMappings[x[0]]) return `${x[0]} not found`;
+								  	 	wordString+=numMappings[x[0]+'0'];
+								  	    x=x.substr(1,x.length-1);
+								  		}
+							  	    else
+								  	    {
+								  	    if(!numMappings[x[0]+x[1]]) return `${''+x[0]+x[1]} not found`;
+								  	    wordString+=numMappings[x[0]+x[1]];	
+								  	    x='';
+								  	    }
+							  	 	}
+							  	 else
+							  	 	{
+							  	 	if(!numMappings[x[0]]) return `${x[0]} not found`;
+							  	 	wordString+=numMappings[x[0]];
+							  	 	x='';
+							  	 	}
+							  	 
+							  	 while(x[0]=='0') x=x.substr(1,x.length-1); 
+
+						  		}
+						  		wordString=wordString.replace(/(hundredand)$/g,'hundred');
+						  		return wordString;
+						}
+
+
+function FindMaxTriangleSum(tri,layer=0,col=0)
+	{
+	if(layer==14)
+		return tri[layer][col];
+	let left=tri[layer][col]+FindMaxTriangleSum(tri,layer+1,col);
+	let right=tri[layer][col]+FindMaxTriangleSum(tri,layer+1,col+1);
+	return left > right?left:right;
+	}
+
+
+
+
+function CountSundays()
+	{
+	 let nonLeap=[1,32,60,91,121,152,182,213,244,274,305,335];
+	 let leap   =[1,32,61,92,122,153,183,214,245,275,306,336];
+	 let mnths  =['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+	 let selectedArr=nonLeap;
+	 let sunday =7;
+	 let year   =1900;
+	 let leapSelected=false;
+	 let sundaysCount='';
+	 while(year < 2001)
+	 	{
+	 	 if(selectedArr.indexOf(sunday)!=-1 && year!=1900)
+	 	 	{
+	 	 	// sundaysCount+=1;
+	 	 	sundaysCount+=(mnths[selectedArr.indexOf(sunday)]+'1 of '+year+' is a sunday')+'\n';
+	 	 	}
+	 	 sunday+=7;
+	 	 if(sunday > 365+(leapSelected?1:0))
+	 	 	{
+ 	 		sunday-=365+(leapSelected?1:0);
+ 	 		year+=1;
+ 	 		// console.log('year '+year+' is a leap year');
+ 	 		// console.log('sunday:'+sunday);
+ 	 		if(year%4==0 && year!=1900)
+ 	 			{
+ 	 		  	leapSelected=true;
+ 	 		  	selectedArr=leap;
+ 	 			}
+ 	 		else
+ 	 			{
+ 	 			leapSelected=false;
+ 	 		  	selectedArr=nonLeap;	
+ 	 			}
+	 	 	}
+	 	}
+	 return sundaysCount;
+	}
+
+const fac2=(x)=>{
+	return x==1?'1':strMult(fac2(x-1),x);
+}
+
+const strMult=(num1,num2)=>{	
+	let sum=0;
+	for(let i=0;i<num2;i++){
+		sum=strAdd(num1,sum);
+	}	
+	return sum+'';
+}
+const strAdd=(num1,num2)=>{	
+	num1+='';
+	num2+='';
+	if (num1.length > num2.length) num2=('0').repeat(num1.length-num2.length)+num2;
+	else if (num2.length > num1.length) num1=('0').repeat(num2.length-num1.length)+num1;
+	
+	let carry=0;
+	let res='';
+
+	for(let i in num1)
+		{
+			let res1=parseInt(num1[num1.length-1-i]) + parseInt(num2[num2.length-1-i])+parseInt(carry);
+			
+			res1+='';			
+			carry=res1.length>1?res1[0]:'0';
+			res=(res1.length>1?res1[1]:res1[0])+res;
+
+		}
+	if(carry!='0') res=carry+res;	
+	return res;
+}
+
+const checkSumOfDivisors=(num)=>{
+	let divSum=1;
+	for(let i=2;i <= Math.sqrt(num);i++){
+		if(num % i == 0)
+			divSum+=i+(num/i);
+	}
+	return divSum;
+}
+const populateAmicable=()=>{
+	let numStore=[];
+	let sum=0;
+	for(let i=2;i<10000;i++){
+		if(numStore.indexOf(i)!=-1) continue;
+		let num2=checkSumOfDivisors(i);
+		if(num2==i) continue;
+		if(i==checkSumOfDivisors(num2)){
+			numStore.push(num2);
+			if(num2>10000) num2=0;
+			sum+=i+num2;
+			// console.log(i+','+num2);
+		}
+	}
+	return sum;	
+}
 
 //Euler problems ends 1536
 
@@ -1595,41 +1923,7 @@ handleReadText=(err,data)=>{
 	if(err)
 		console.log("error while attempting to read");
 	else
-		{
-		// data=data.replace(/[\s]+/g,' ').split(' ').join('\n');
-		// data=justify(data,10);	
-		// data=simpleHash("hi","salt",2);
-		// data=stopAt(6,20);
-		// data=JSON.stringify(find4Number(99));
-		// data=JSON.stringify(IterativeRotationCipher.encode(10,"If you wish to make an apple pie from scratch, you must first invent the universe."));
-		// data=JSON.stringify(IterativeRotationCipher.decode("10 hu fmo a,ys vi utie mr snehn rni tvte .ysushou teI fwea pmapi apfrok rei tnocsclet"));
-		// data=JSON.stringify(IterativeRotationCipher.decode("14 daue ilev is a munbune Traurecracy."));
-
-		strxx="True evil is a mundane bureaucracy.";
-		// strxx="10 hu fmo a,ys vi utie mr snehn rni tvte .ysushou teI fwea pmapi apfrok rei tnocsclet";
-		strxx="36 ws h weA dgIaa ug owh n!asrit git \n msm phw teaI'e tanantwhe reos\ns ther! aHeae \'gwadin\nt haw n htoo ,I\'i sy aohOy";
-		n=10;
-		// data=JSON.stringify(IterativeRotationCipher.encode(n,strxx));
-		// data=JSON.stringify(IterativeRotationCipher.decode(strxx));
-
-		strxx="Romani_ite_domum";
-		strxx="Rntodomiimuea__m";
-		// data=JSON.stringify(InterlacedSpiralCipher.decode(strxx));
-		strxx="cozy lummox gives smart squid who asks for job pen";
-		key='playfairjexample';
-		// data=JSON.stringify(encipher(strxx,key));
-		key='EPSDUCVWYM+ZLKXNBTFGORIJHAQ';
-		period=5;
-		inp='DEFEND THE EAST WALL OF THE CASTLE+';//to be encoded
-		inp='SUEFECPHSEGYYJIXIMFOFOCEJLBSP';//to be decoded
-		// data=JSON.stringify(trifidEncode(key,period,inp));
-		// data=trifidDecode(key,period,inp);
-		// data=JSON.stringify(populateKeyMatrix(key));		
-
-		// orig="thecatinthebage";
-		// key="xxx xxx xx";
-		// data=JSON.stringify(IntroduceSpaces(orig,key));
-		
+		{	
 
 		const deck = [
 					  "2C", "6H", "5S", "7S", "JS", "8C", "7C", "2D", "3D", "8D", "3C", "KS", "QS",
@@ -1639,71 +1933,324 @@ handleReadText=(err,data)=>{
 					  "AD", "KD"
 					 ];
 
-
-	
-
-
-
-		// let blackCards=['AC','2C','3C','4C','5C','6C','7C','8C','9C','TC','JC','QC','KC','AS','2S','3S','4S','5S','6S','7S','8S','9S','TS','JS','QS','KS','XB'];
-		// let   redCards=['AD','2D','3D','4D','5D','6D','7D','8D','9D','TD','JD','QD','KD','AH','2H','3H','4H','5H','6H','7H','8H','9H','TH','JH','QH','KH','XR'];
-		// let   allAlphs=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '];
-		// data=printOutArray(arrangeDeck(deck));
-
-		// message="ATTACK TONIGHT ON CODEWARS";
-		// codedmessage="QNBSCTZQOLOBZNKOHUHGLQWLOK";	
-		// message="A";	
-		// codedmessage="B"; 
-
-		// if(process.argv[2] == 'd')
-		// data=CardChameleon.decrypt(codedmessage,deck);
-		// else
-		// data=CardChameleon.encrypt(message,deck);
-
-		// scores=[15, 10, 9, 5];
-		// weights = [1, 5, 3, 4];
-		// capacity = 8;
-		// data=JSON.stringify(packBagpack(scores, weights, capacity));
-
-		// data=''+printOutMatrix(FindAllDiceCombs(8,3));
-		// data= ''+ josephusSurvivor(5,3);
-		// gold = [140,649,340,982,105,86,56,610,340,879];
-		// data= JSON.stringify(GetAllElems(gold).map(subarr=>subarr.map(i=>gold[i])));
-		// data= JSON.stringify(distributionOf(gold));
-
-		// data=nico("crazy","secretmessage");
-		// data2=denico_clever("crazy",data);
-
-
-		// ls=[50, 55, 57, 58];
-		// k=3;
-		// t=163;
-		// data=''+chooseBestSum(t, k, ls);
-
-		// ls=[ [1, 2], [1, 3], [1, 4] ];
-		// data=convertFrac(ls);//206459
-
-		// data=JSON.stringify(largestPrimeFac(133));
-
-		// data=''+smallestMult();
-
-		// var alphabet = 'abcdefghijklmnopqrstuvwxyz';
-		// var key = 'password';
-		// var c = new VigenèreCipher(key, alphabet);
-		// data=c.decode('laxxhsj');
-
-		data=data.split('\r\n');
-		data=data.map(x=>x.split(' ').map(y=>parseInt(y)));
-		data=''+FindMaxProduct(data);
+		let equations=['2x+3y+7z=8','3x+4y=-3z+7'];
+		data=JSON.stringify(solve(equations));
 
 		fs.writeFile("./datum.json",data,errHandler);
 		}
 }
+
 readFromFile=()=>{
 	fs.readFile('input.txt','utf8',handleReadText);
 }
 readFromFile();
 
-	function livingRoom(prisonerNumber, lightbulb, previousVisits) {
+function varExtractor(eqn){
+let lhs=[];
+let rhs=0;
+//todo
+}
+
+function solve(equations)
+	{
+	 let lhs=[];
+	 let rhs=[];	 
+	 [lhs,rhs]=SeperateVars(equations);
+
+	 return rhs;
+	 let varnames=GetVarNames(lhs);
+	 let constMat=GetConstMat(rhs);
+	 if(lhs.length < varnames.length) return null;
+	 let lhs_mat=[];	 
+	 for(let i in lhs)
+	 	{
+	 	 lhs_mat.push(ExtractCoeffs(lhs[i],varnames));
+	 	}
+	 RemoveDuplicateRows(lhs_mat);
+	 if(lhs_mat.length != varnames.length) return null;
+	 return MatrixMult(Inverse(lhs_mat),constMat);
+	}
+
+function SeperateVars(equations)
+	{
+	let lhs=[];
+	let rhs=[];
+	for(let eqn of equations)
+		{
+		let eqn_left_exprs=eqn.split('=')[0].match(/[+,-]?\d+[a-z]{1}/g);
+		let eqn_right_exprs=eqn.split('=')[1].match(/[+,-]?\d+[a-z]{1}/g);
+		let eqn_left_const=eqn.split('=')[0].match(/[+,-]?\d+[^a-zA-Z]/g);
+		let eqn_right_const=eqn.split('=')[1].match(/[+,-]?\d+[^a-zA-Z]/g);
+		if(!eqn_left_exprs) eqn_left_exprs=[];
+		if(!eqn_right_exprs) eqn_right_exprs=[];
+		if(!eqn_left_const) eqn_left_const=[];
+		if(!eqn_right_const) eqn_right_const=[];
+		let combinedLeftArr=eqn_left_exprs.concat(eqn_right_exprs.map(x=>
+																		 {
+																		 	if(x[0]=='+') return '-'+x.slice(1);
+																		 	else if(x[0]=='-') return '+'+x.slice(1);
+																		 	else return '-'+x.slice(1);
+																		 }
+																	  )
+												 );
+		if(eqn_left_const.length==0 && eqn_right_const.length==0) rhs.push(0);
+		else if(eqn_right_const.length!=0) rhs.push(parseInt(eqn_right_const[0]));
+		else if(eqn_left_const.length!=0) rhs.push(-1*parseInt(eqn_left_const[0]));
+		lhs.push(combinedLeftArr.join(','));
+		}
+	return [lhs,rhs];
+	}
+
+function MatrixMult(a,b)
+	{
+		if(a[0].length !=b.length) return Array(b.length).fill(0);
+		let resultMat=[];
+		for(let j=0;j<a.length;j++)
+		{
+			resultMat.push(b.reduce((sop,row,i)=>row.map((x,k)=>a[j][i]*x+sop[k]), Array(b[0].length).fill(0) )  );
+		}
+		return resultMat;
+	}
+
+function FindDeterminant(matx)
+	{
+	if(matx.length==1) return matx[0][0];
+	 let deter=0;
+	for(let j=0;j<matx[0].length;j++)//traverse the top row
+		{		 
+		 let formedMat=[];
+		 let formedArr=[];
+		
+		 for(let a=1;a<matx.length;a++)
+		 	{	
+		 	for(let b=0;b<matx[0].length;b++)
+		 		{
+		 		  if(b==j) continue;
+		 		  formedArr.push(matx[a][b]);
+		 		  if(formedArr.length >= matx[0].length-1)
+		 		  	{
+		 		  	 formedMat.push(formedArr);
+		 		  	 formedArr=[];
+		 		  	}
+		 		}		 	
+		 	}
+		
+		 deter+=Math.pow(-1,j) * matx[0][j]*FindDeterminant(formedMat);
+		}
+	return deter;
+	}
+//clever solution
+function determinant(m) {
+  if (m.length == 0) return 0;
+  if (m.length == 1) return m[0][0];
+  if (m.length == 2) return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+  if (m.length > 2) {
+    return m.reduce((prev, curr, i, arr) => {
+      let miniArr = arr.slice(0, i).concat(arr.slice(i + 1)).map(item => item.slice(1));      
+      return prev + (i % 2 == 0 ? 1 : -1 ) * curr[0] * determinant(miniArr);
+    }, 0);
+  }
+};
+
+function transpose(mat){
+	let resultMat=[];
+	let colMat=[];
+	for(let j=0;j<mat[0].length;j++)
+		{
+		for(let i=0;i<mat.length;i++)
+			{
+			colMat.push(mat[i][j]);
+			}
+		resultMat.push(colMat);
+		colMat=[];
+		}
+	return resultMat;
+}
+
+function Inverse(mat){
+	if(mat.length==1) return [[1/mat[0][0]]];
+	let deter=determinant(mat);
+	let coF= mat.map(
+					(x,i,origMat)=>x.map(
+								 (y,j)=> Math.pow(-1,i+j)*determinant( origMat.slice(0,i).concat(origMat.slice(i+1)).map(matrow=>matrow.filter((matElem,k)=>k!=j)) )								 		
+						                )						   
+		            );
+	let adj=transpose(coF);
+	return adj.map(x=>x.map(y=>y/deter));
+}
+
+
+
+
+function encrypt(text, key) 
+	{
+	 if(key==0) return text;
+	key+='';	
+	let regions=["qwertyuiop","asdfghjkl","zxcvbnm,."];
+	let regionsUpper=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM<>'];	
+	let resultString='';
+	for(let ch of text.split(''))
+		{	
+		let found=false;
+		for(let i in regions)
+			{
+			if(regions[i].indexOf(ch)!=-1)
+				{
+				resultString+=encodedx(regions[i],key[i],ch);
+				found=true;
+				break;
+				}
+			}
+		if(found) continue;
+		for(let i in regionsUpper)
+			{
+			if(regionsUpper[i].indexOf(ch)!=-1)
+				{
+				resultString+=encodedx(regionsUpper[i],key[i],ch);
+				found=true;
+				break;
+				}
+			}
+			if(!found) resultString+=ch;
+		}
+		return resultString;
+	}
+
+function decrypt(text, key) 
+	{
+	 if(key==0) return text;
+	key+='';
+	
+	let regions=["qwertyuiop","asdfghjkl","zxcvbnm,."];
+	let regionsUpper=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM<>'];
+	
+	let resultString='';
+	for(let ch of text.split(''))
+		{
+	
+		let found=false;
+		for(let i in regions)
+			{
+			if(regions[i].indexOf(ch)!=-1)
+				{
+				resultString+=decodedx(regions[i],key[i],ch);
+				found=true;
+				break;
+				}
+			}
+		if(found) continue;
+		for(let i in regionsUpper)
+			{
+			if(regionsUpper[i].indexOf(ch)!=-1)
+				{
+
+				resultString+=decodedx(regionsUpper[i],key[i],ch);
+				found=true;
+				break;
+				}
+			}
+			if(!found) resultString+=ch;
+		}
+		return resultString;
+	}
+
+function encodedx(region,keyNum,ch)
+	{
+		// console.log(`region:${region},keynum:${keyNum} and ch:${ch}`)
+		let chPos=region.indexOf(ch);
+		let shiftedPos=(chPos+parseInt(keyNum))%region.length;
+		// console.log(`returning ${region[shiftedPos]}`);
+		return region[shiftedPos];
+	}
+function decodedx(region,keyNum,ch)
+	{
+		// console.log(`region:${region},keynum:${keyNum} and ch:${ch}`)
+		let chPos=region.indexOf(ch);
+		let shiftedPos=(chPos-parseInt(keyNum));
+		if(shiftedPos < 0) shiftedPos+=region.length;
+		// console.log(`returning ${region[shiftedPos]}`);
+		return region[shiftedPos];
+	}
+
+
+
+//clever solutions
+const rows = ["qwertyuiop", "asdfghjkl", "zxcvbnm,.",
+              "QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM<>"];
+
+const encrypt3 = (text, key) =>
+  text.split("")
+      .map(shiftLetter("encrypt", key))
+      .join("");
+
+const decrypt3 = (text, key) =>
+  text.split("")
+      .map(shiftLetter("decrypt", key))
+      .join("");
+
+const shiftLetter = (mode, key) => (l) => {
+  let d = (mode == "encrypt") ? 1 : -1;
+  let i = rows.findIndex(x => x.includes(l));
+  if (i == -1) return l;
+  
+  let j = rows[i].indexOf(l);
+  let k = ~~(key / Math.pow(10, mod(2-i, 3))) % 10;  
+  return rows[i][mod(j + d*k, rows[i].length)];
+}
+
+const mod = (m,n) => ((m % n) + n) % n;
+
+
+const key=["qwertyuiop","asdfghjkl","zxcvbnm,.","QWERTYUIOP","ASDFGHJKL","ZXCVBNM<>"],
+      cv=(c,k,m,f)=>(f=key.filter(x=>x.includes(c))[0])?f[(+("000"+k).slice(-3)[key.indexOf(f)%3]*m+f.indexOf(c)+f.length)%f.length]:c,
+      encrypt2=(s,k)=>s.replace(/./g,x=>cv(x,k,1)), decrypt2=(s,k)=>s.replace(/./g,x=>cv(x,k,-1))
+
+
+
+function GetDataInTree(data)
+	{
+		data=data.split('\r\n');		
+		let rootx={value:0,left:null,right:null};
+		let prevLayer=[];
+		for(let i=0;i<data.length;i++)
+			{
+			let presentLayer=data[i].split(' ').map(x=>parseInt(x));
+			if(i==0)
+				{
+				  rootx.value=presentLayer[0];
+				  prevLayer=[rootx];
+				  continue;
+				}
+			let prevLayerNew=[];
+			let debugString='';
+			for(let j in presentLayer)
+				{				  
+				  let node={value: presentLayer[j],left:null,right:null};	
+				  prevLayerNew.push(node);	  
+				  if(j%2==0)
+				  	prevLayer[parseInt(j/2)].left=node;
+				  else
+				  	prevLayer[parseInt(j/2)].right=node;
+				}
+			
+			prevLayer=prevLayerNew;
+			}
+		return rootx;
+	}
+
+function rlrTraverse(rootx)
+	{	 
+	 if(!rootx) return '$';
+	 // if(!rootx.left || !rootx.right) return '$';
+	 let leftTraversal=rootx.left?rlrTraverse(rootx.left):'_';
+	 let rightTraversal=rootx.right?rlrTraverse(rootx.right):'_';
+	 return rootx.value+'->'+leftTraversal+'->'+rightTraversal;
+	}
+
+
+
+
+function livingRoom(prisonerNumber, lightbulb, previousVisits) {
   const assertion = false;
   let assertion2=assertion;
   if(prisonerNumber==0 && lightbulb) 

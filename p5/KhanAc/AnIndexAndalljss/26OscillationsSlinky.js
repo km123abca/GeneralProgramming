@@ -20,7 +20,7 @@ var drawSlinky = function(centerX, startY, endY) {
 };
 
 draw = function() {
-    background(255);
+    background(0);
     var ypost=sin(TWO_PI *frameCount/100);
     var ypos=map(ypost,-1,1,200,300);
     drawSlinky(width/2, 10, ypos);
