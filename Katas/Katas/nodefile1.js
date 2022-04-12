@@ -1933,7 +1933,7 @@ handleReadText=(err,data)=>{
 					  "AD", "KD"
 					 ];
 
-		let equations=['2x+3y+7z=8','3x+4y=-3z+7'];
+		let equations=['2x+3y-9=3n-7z','3x+4y=-3z'];
 		data=JSON.stringify(solve(equations));
 
 		fs.writeFile("./datum.json",data,errHandler);
@@ -1954,12 +1954,12 @@ let rhs=0;
 function solve(equations)
 	{
 	 let lhs=[];
-	 let rhs=[];	 
-	 [lhs,rhs]=SeperateVars(equations);
-
+	 let rhs=[];
+	 let varnames=[];	 
+	 [lhs,rhs,varnames]=SeperateVars(equations);
 	 return rhs;
-	 let varnames=GetVarNames(lhs);
-	 let constMat=GetConstMat(rhs);
+	
+
 	 if(lhs.length < varnames.length) return null;
 	 let lhs_mat=[];	 
 	 for(let i in lhs)
@@ -1971,16 +1971,25 @@ function solve(equations)
 	 return MatrixMult(Inverse(lhs_mat),constMat);
 	}
 
+function ExtractCoeffs(expr,varnames)
+	{
+	 let resultMat=[];
+	 for(let x of varnames)
+	 	{	 	
+	 	 //todo find coeff corresp to each varname
+	 	}
+	}
 function SeperateVars(equations)
 	{
 	let lhs=[];
 	let rhs=[];
+	let varnames=[];
 	for(let eqn of equations)
 		{
 		let eqn_left_exprs=eqn.split('=')[0].match(/[+,-]?\d+[a-z]{1}/g);
 		let eqn_right_exprs=eqn.split('=')[1].match(/[+,-]?\d+[a-z]{1}/g);
-		let eqn_left_const=eqn.split('=')[0].match(/[+,-]?\d+[^a-zA-Z]/g);
-		let eqn_right_const=eqn.split('=')[1].match(/[+,-]?\d+[^a-zA-Z]/g);
+		let eqn_left_const=eqn.split('=')[0].match(/[+,-]?\d+(?![a-zA-Z])/g);
+		let eqn_right_const=eqn.split('=')[1].match(/[+,-]?\d+(?![a-zA-Z])/g);
 		if(!eqn_left_exprs) eqn_left_exprs=[];
 		if(!eqn_right_exprs) eqn_right_exprs=[];
 		if(!eqn_left_const) eqn_left_const=[];
@@ -1989,16 +1998,28 @@ function SeperateVars(equations)
 																		 {
 																		 	if(x[0]=='+') return '-'+x.slice(1);
 																		 	else if(x[0]=='-') return '+'+x.slice(1);
-																		 	else return '-'+x.slice(1);
+																		 	else return '-'+x;
 																		 }
 																	  )
 												 );
 		if(eqn_left_const.length==0 && eqn_right_const.length==0) rhs.push(0);
 		else if(eqn_right_const.length!=0) rhs.push(parseInt(eqn_right_const[0]));
 		else if(eqn_left_const.length!=0) rhs.push(-1*parseInt(eqn_left_const[0]));
+        varnames=getVarNames(combinedLeftArr,varnames);
 		lhs.push(combinedLeftArr.join(','));
 		}
-	return [lhs,rhs];
+	return [lhs,rhs,varnames];
+	}
+
+function getVarNames(arr,varnames)
+	{
+	for(let elem of arr)
+		{
+		 let varx=elem.match(/[a-zA-Z]+/g);
+		 if(varx && varnames.indexOf(varx[0])==-1)
+		 	varnames.push(varx[0]);
+		}
+	return varnames;
 	}
 
 function MatrixMult(a,b)

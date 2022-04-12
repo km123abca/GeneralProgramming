@@ -135,3 +135,30 @@ brownie_fundme
 run, brownie init
 put FundMe.sol inside contracts
 create brownie-config.yaml and set it up appropriately
+
+Inorder to verify the contract once it is deployed to rinkeby  do the following
+Go to etherscan.io and sign up
+create an api key (click Add)
+copy the api key and put it inside the .env file
+export ETHERSCAN_TOKEN=F2TJX4TSTYIYYR3HPWJF6VCAZGINBZFHSQ
+then in deploy_fundme.py
+fund_me=FundMe.deploy({"from":account},publish_source=True)
+Now inorder to deploy in rinkeby do,
+brownie run scripts/deploy_fundme.py --network rinkeby
+
+Now once the contract is deployed, it is automatically verified
+Now go to rinkeby etherscan and paste the contract address
+You can see Transactions Contracts Events. There will be a check mark near contracts.
+You can also  Read Contract(see vars), Write Contract (Perform Transactions)
+
+Verification requires expanding the .sol files (eg: price feed, to know conversion rate between eth and usd), a process called flattening
+But this cannot be done while depoloying to a local ganache chain
+Inorder to do that first we need to pass the price_feed address, 0x8A753747A1Fa494EC906cE90E9f37563A8AF630e to the contract constructor
+The contract can then use AggregatorV3Interface on this price feed
+Add the line
+if network.show_active() != "development":
+	price_feed_address= config['networks'][network.show_active()]['eth_usd_price_feed'], to the code
+We need to create a mock contract to deal with price_feed_address when network.show_active() is equal to  development
+
+*Creating the Mock contract
+create contracts/test/MockV3Aggregator.sol
