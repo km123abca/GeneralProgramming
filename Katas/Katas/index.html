@@ -17,6 +17,30 @@
 					        				}
 					        		}
 					        }
+
+	//scripts to test
+	function ExtractCoeffs(expr,varnames)
+		{
+		 
+		 let resultMat=[];
+		 for(let x of varnames)
+		 	{	 	
+		 	 let rex=new RegExp(`[+-]*\\d*(?=${x})`,'g');
+		 	 if(expr.match(rex))
+		 	 	{
+		 	 	 if(expr.match(rex)[0].match(/[+-]*\d+/))
+		 	 	 	resultMat.push(parseInt(expr.match(rex)[0]));
+		 	 	 else if(expr.match(rex)[0].match(/[-]/)) 	
+		 	 	 	resultMat.push(-1); 
+		 	 	 else
+		 	 	 	resultMat.push(1); 	 
+		 	 	}	
+		 	 else
+		 	 	resultMat.push(0);	 	 
+		 	}
+		 return resultMat;
+		}
+	//scripts to test ends
 	</script>
 	<title>	Pete the Baker</title>
 	<style>

@@ -47,6 +47,12 @@ contract FundMe{
         }
         funders = new address[](0);
     }
+    function getEntranceFee() public view returns (uint256){
+        uint256 minimumUSD = 50* 10 **18;
+        uint256 price = getPrice();
+        uint256 precision = 1* 10**18;
+        return (minimumUSD * precision)/price;
+    }
     modifier onlyOwner{
         require(msg.sender == owner);
         _;

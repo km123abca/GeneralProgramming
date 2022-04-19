@@ -1933,7 +1933,8 @@ handleReadText=(err,data)=>{
 					  "AD", "KD"
 					 ];
 
-		let equations=['2x+3y-9=3n-7z','3x+4y=-3z'];
+		// let equations=['4x+8y+3z=44','5x+y-2z=5','20x+y+z=47'];
+		let equations=['x+y=7z-1','6x+z=-3y','4y+10z=-8x'];
 		data=JSON.stringify(solve(equations));
 
 		fs.writeFile("./datum.json",data,errHandler);
@@ -1956,9 +1957,8 @@ function solve(equations)
 	 let lhs=[];
 	 let rhs=[];
 	 let varnames=[];	 
-	 [lhs,rhs,varnames]=SeperateVars(equations);
-	 return rhs;
-	
+	 [lhs,rhs,varnames]=SeperateVars(equations);	 
+	 rhs=rhs.map(x=>[x]);
 
 	 if(lhs.length < varnames.length) return null;
 	 let lhs_mat=[];	 
@@ -1966,18 +1966,66 @@ function solve(equations)
 	 	{
 	 	 lhs_mat.push(ExtractCoeffs(lhs[i],varnames));
 	 	}
-	 RemoveDuplicateRows(lhs_mat);
+	 
+	 [lhs_mat,rhs]=RemoveDuplicateRows(lhs_mat,rhs);
+	 
+	 if(lhs_mat.length > varnames.length) lhs_mat=lhs_mat.slice(0,varnames.length);
+	 
 	 if(lhs_mat.length != varnames.length) return null;
-	 return MatrixMult(Inverse(lhs_mat),constMat);
+	 let resMap=new Map();
+	 return MatrixMult(Inverse(lhs_mat),rhs).reduce((s,x,i)=>s+`${varnames[i]}:${x[0]},`,'');
+	 let matResult=MatrixMult(Inverse(lhs_mat),rhs);
+	 // for(let i=0;i < matResult.length;i++)
+	 // 	{
+	 // 		resMap.set(varnames[i],matResult[i][0]);
+	 // 	}
+	 // return resMap;
+
 	}
 
-function ExtractCoeffs(expr,varnames)
+function RemoveDuplicateRows(mat,rhs)
 	{
+	  let indicesToRemove=[];
+	  for(let i in mat)
+	  	{
+	  	 for(let j=0;j < i;j++)
+	  	 {
+	  	  let filterResult=  mat[i].map((elem,k)=>elem/(mat[j][k]!=0?mat[j][k]:99)).map((elem,l,arr)=>elem==arr[0]?1:-1).reduce((sx,elem)=>sx+elem,0);
+	  	  if(filterResult==mat[i].length)
+	  	  	{ 
+	  	  	 indicesToRemove.push(parseInt(i));
+	  	  	 break;
+	  	  	}
+
+	  	 }
+	  	}
+	  
+	  return [mat.filter((x,i)=>indicesToRemove.indexOf(i)==-1),rhs.filter((x,i)=>indicesToRemove.indexOf(i)==-1)];
+	}
+
+
+
+
+
+function ExtractCoeffs(expr,varnames)
+	{		 
 	 let resultMat=[];
 	 for(let x of varnames)
 	 	{	 	
-	 	 //todo find coeff corresp to each varname
+	 	 let rex=new RegExp(`[+-]*\\d*(?=${x})`,'g');
+	 	 if(expr.match(rex))
+	 	 	{
+	 	 	 if(expr.match(rex)[0].match(/[+-]*\d+/))
+	 	 	 	resultMat.push(parseInt(expr.match(rex)[0]));
+	 	 	 else if(expr.match(rex)[0].match(/[-]/)) 	
+	 	 	 	resultMat.push(-1); 
+	 	 	 else
+	 	 	 	resultMat.push(1); 		 
+	 	 	}	
+	 	 else
+	 	 	resultMat.push(0);	 	 
 	 	}
+	 return resultMat;
 	}
 function SeperateVars(equations)
 	{
@@ -1986,8 +2034,8 @@ function SeperateVars(equations)
 	let varnames=[];
 	for(let eqn of equations)
 		{
-		let eqn_left_exprs=eqn.split('=')[0].match(/[+,-]?\d+[a-z]{1}/g);
-		let eqn_right_exprs=eqn.split('=')[1].match(/[+,-]?\d+[a-z]{1}/g);
+		let eqn_left_exprs=eqn.split('=')[0].match(/[+,-]?\d*[a-z]{1}/g);//, is unnecessary in [+,-]
+		let eqn_right_exprs=eqn.split('=')[1].match(/[+,-]?\d*[a-z]{1}/g);
 		let eqn_left_const=eqn.split('=')[0].match(/[+,-]?\d+(?![a-zA-Z])/g);
 		let eqn_right_const=eqn.split('=')[1].match(/[+,-]?\d+(?![a-zA-Z])/g);
 		if(!eqn_left_exprs) eqn_left_exprs=[];

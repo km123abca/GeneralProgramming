@@ -162,3 +162,14 @@ We need to create a mock contract to deal with price_feed_address when network.s
 
 *Creating the Mock contract
 create contracts/test/MockV3Aggregator.sol
+*brownie compile
+*now start ganache and run, brownie run scripts/brownie_fundme.py, latches on to the local ganache chain at port 8545
+
+*brownie networks list #shows all networks
+*brownie networks add Ethereum ganache-local host=http://127.0.0.1:8545 chainid=1337
+
+
+set ganache-local:
+		verify:False 
+in config file
+*brownie run scripts/deploy_fundme.py --network ganache-local
